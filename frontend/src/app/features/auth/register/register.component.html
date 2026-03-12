@@ -1,0 +1,122 @@
+<div class="register-container">
+  <div class="register-card">
+    <h1>Create Your Account</h1>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [class.invalid]="email?.invalid && email?.touched"
+          placeholder="you@example.com"
+        />
+        <div *ngIf="email?.invalid && email?.touched" class="error-message">
+          <small *ngIf="email?.errors?.['required']">Email is required</small>
+          <small *ngIf="email?.errors?.['email']">Please enter a valid email</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">Full Name *</label>
+        <input
+          type="text"
+          id="fullName"
+          formControlName="fullName"
+          class="form-control"
+          [class.invalid]="fullName?.invalid && fullName?.touched"
+          placeholder="John Doe"
+        />
+        <div *ngIf="fullName?.invalid && fullName?.touched" class="error-message">
+          <small *ngIf="fullName?.errors?.['required']">Full name is required</small>
+          <small *ngIf="fullName?.errors?.['minlength']">Minimum 2 characters required</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input
+            type="text"
+            id="country"
+            formControlName="country"
+            class="form-control"
+            placeholder="USA"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="organization">Organization</label>
+          <input
+            type="text"
+            id="organization"
+            formControlName="organization"
+            class="form-control"
+            placeholder="Optional"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          [class.invalid]="password?.invalid && password?.touched"
+          placeholder="Min 8 characters"
+        />
+        <div *ngIf="password?.invalid && password?.touched" class="error-message">
+          <small *ngIf="password?.errors?.['required']">Password is required</small>
+          <small *ngIf="password?.errors?.['minlength']">Minimum 8 characters required</small>
+          <small *ngIf="password?.errors?.['passwordStrength']">
+            Must include uppercase, lowercase, digit, and special character
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          class="form-control"
+          [class.invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+          placeholder="Re-enter password"
+        />
+        <div *ngIf="registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched" class="error-message">
+          <small>Passwords do not match</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="roleName">I am a *</label>
+        <select id="roleName" formControlName="roleName" class="form-control">
+          <option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading || registerForm.invalid">
+        <span *ngIf="!loading">Create Account</span>
+        <span *ngIf="loading">Creating Account...</span>
+      </button>
+    </form>
+
+    <div class="links">
+      <span>Already have an account?</span>
+      <a routerLink="/auth/login">Login</a>
+    </div>
+  </div>
+</div>

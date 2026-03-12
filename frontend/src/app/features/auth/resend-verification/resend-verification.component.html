@@ -1,0 +1,40 @@
+<div class="resend-container">
+  <div class="resend-card">
+    <h1>Resend Verification Email</h1>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-error">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="resendForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          [class.invalid]="email?.invalid && email?.touched"
+          placeholder="you@example.com"
+        />
+        <div *ngIf="email?.invalid && email?.touched" class="error-message">
+          <small *ngIf="email?.errors?.['required']">Email is required</small>
+          <small *ngIf="email?.errors?.['email']">Please enter a valid email</small>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading || resendForm.invalid">
+        <span *ngIf="!loading">Resend Verification Email</span>
+        <span *ngIf="loading">Sending...</span>
+      </button>
+    </form>
+
+    <div class="links">
+      <a routerLink="/auth/login">Back to Login</a>
+    </div>
+  </div>
+</div>
