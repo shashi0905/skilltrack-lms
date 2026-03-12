@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Verification Test</title>
+</head>
+<body>
+    <h2>Email Verification</h2>
+    <form id="verifyForm">
+        <input type="text" id="token" placeholder="Enter token from email" style="width: 400px;">
+        <button type="submit">Verify Email</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('verifyForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const token = document.getElementById('token').value;
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - SkillTrack LMS</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        .email-body {
+            padding: 40px 30px;
+        }
+        .email-body h2 {
+            color: #667eea;
+            font-size: 22px;
+            margin-top: 0;
+        }
+        .email-body p {
+            margin: 15px 0;
+            font-size: 16px;
+        }
+        .verify-button {
+            display: inline-block;
+            padding: 14px 32px;
+            margin: 25px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .verify-button:hover {
+            transform: translateY(-2px);
+        }
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .email-footer {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 25px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>🎓 SkillTrack LMS</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="email-body">
+            <h2>Welcome, <span th:text="${userName}">User</span>! 👋</h2>
+            
+            <p>Thank you for registering with SkillTrack LMS. We're excited to have you join our learning community!</p>
+            
+            <p>To get started, please verify your email address by clicking the button below:</p>
+
+            <!-- Verification Button -->
+            <div style="text-align: center;">
+                <a th:href="${verificationLink}" class="verify-button">
+                    Verify Email Address
+                </a>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <p><strong>⏰ Important:</strong> This verification link will expire in <span th:text="${expirationHours}">1</span> hour(s).</p>
+                <p><strong>🔒 Security:</strong> If you didn't create an account, please ignore this email.</p>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Alternative Link -->
+            <p style="font-size: 14px; color: #666;">
+                If the button above doesn't work, copy and paste this link into your browser:
+            </p>
+            <p style="font-size: 13px; color: #999; word-break: break-all;">
+                <a th:href="${verificationLink}" th:text="${verificationLink}" style="color: #667eea;">Verification Link</a>
+            </p>
+
+            <div class="divider"></div>
+
+            <!-- What's Next -->
+            <p><strong>What's next?</strong></p>
+            <p style="font-size: 15px;">
+                ✅ Verify your email<br>
+                ✅ Complete your profile<br>
+                ✅ Browse courses<br>
+                ✅ Start learning!
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p><strong>Need help?</strong> Contact us at <a href="mailto:support@skilltrack.com">support@skilltrack.com</a></p>
+            <p>© 2026 SkillTrack LMS. All rights reserved.</p>
+            <p style="font-size: 12px; margin-top: 10px;">
+                You received this email because you registered for an account on SkillTrack LMS.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

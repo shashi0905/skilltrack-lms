@@ -1,0 +1,161 @@
+# SkillTrack API Configuration
+# Development profile
+
+spring:
+  application:
+    name: skilltrack-api
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/skilltrack
+    username: skilltrack
+    password: skilltrack123
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  # JPA/Hibernate Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Use Flyway for schema management
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+  # Mail Configuration (MailHog for development)
+  mail:
+    host: localhost
+    port: 1025
+    username: 
+    password: 
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+  # Uncomment below for real Gmail SMTP (replace with your credentials)
+  # mail:
+  #   host: smtp.gmail.com
+  #   port: 587
+  #   username: your-email@gmail.com
+  #   password: your-app-password
+  #   properties:
+  #     mail:
+  #       smtp:
+  #         auth: true
+  #         starttls:
+  #           enable: true
+
+  # Thymeleaf Configuration
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false  # Disable cache in development
+
+  # Redis Cache Configuration (optional)
+  cache:
+    type: simple  # Use simple cache for development, redis for production
+  
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  # OAuth2 Client Configuration (GitHub)
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:your-github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:your-github-client-secret}
+            scope:
+              - user:email
+              - read:user
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# JWT Configuration
+jwt:
+  secret: YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong
+  expiration: 86400000  # 24 hours in milliseconds
+  refresh-expiration: 604800000  # 7 days in milliseconds
+
+# Application Configuration
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:8080/api/auth}  # Point to backend for testing
+  from-email: ${FROM_EMAIL:noreply@skilltrack.com}  # Default sender email
+  oauth2:
+    redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:4200/oauth2/redirect}  # OAuth2 redirect after success
+
+# Email Verification Configuration
+email-verification:
+  token-expiry-hours: 1
+
+# Password Reset Configuration
+password-reset:
+  token-expiry-hours: 1
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.skilltrack: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha

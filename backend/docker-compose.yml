@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: skilltrack-postgres
+    environment:
+      POSTGRES_DB: skilltrack
+      POSTGRES_USER: skilltrack
+      POSTGRES_PASSWORD: skilltrack123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - skilltrack-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: skilltrack-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - skilltrack-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: skilltrack-mailhog
+    ports:
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
+    networks:
+      - skilltrack-network
+
+volumes:
+  postgres_data:
+
+networks:
+  skilltrack-network:
+    driver: bridge
