@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CourseModuleRepository extends JpaRepository<CourseModule, Long> {
+public interface CourseModuleRepository extends JpaRepository<CourseModule, String> {
+
+    // Find modules by course with lessons loaded
+    @Query("SELECT m FROM CourseModule m LEFT JOIN FETCH m.lessons WHERE m.course = :course ORDER BY m.orderIndex ASC")
+    List<CourseModule> findByCourseWithLessonsOrderByOrderIndexAsc(@Param("course") Course course);
 
     // Find modules by course
     List<CourseModule> findByCourseOrderByOrderIndexAsc(Course course);
 
     // Find module by ID and course (for ownership verification)
-    Optional<CourseModule> findByIdAndCourse(Long id, Course course);
+    Optional<CourseModule> findByIdAndCourse(String id, Course course);
 
     // Count modules in a course
     long countByCourse(Course course);
@@ -29,8 +33,8 @@ public interface CourseModuleRepository extends JpaRepository<CourseModule, Long
     List<Object[]> findModulesWithLessonCount(@Param("course") Course course);
 
     // Find next order index for a course
-    @Query("SELECT COALESCE(MAX(m.orderIndex), 0) + 1 FROM CourseModule m WHERE m.course = :course")
-    Integer findNextOrderIndex(@Param("course") Course course);
+    @Query("SELECT COALESCE(MAX(m.orderIndex), 0) + 1 FROM CourseModule m WHERE m.course.id = :courseId")
+    Integer findNextOrderIndex(@Param("courseId") String courseId);
 
     // Check if module title exists in course
     boolean existsByTitleAndCourse(String title, Course course);

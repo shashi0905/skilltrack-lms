@@ -45,7 +45,7 @@ public class CourseController {
     @PutMapping("/{courseId}")
     @Operation(summary = "Update a course")
     public ResponseEntity<CourseResponse> updateCourse(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             @Valid @RequestBody CourseUpdateRequest request,
             Authentication authentication) {
         CourseResponse response = courseService.updateCourse(courseId, request, authentication.getName());
@@ -55,7 +55,7 @@ public class CourseController {
     @PostMapping("/{courseId}/publish")
     @Operation(summary = "Publish a course")
     public ResponseEntity<CourseResponse> publishCourse(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             Authentication authentication) {
         CourseResponse response = courseService.publishCourse(courseId, authentication.getName());
         return ResponseEntity.ok(response);
@@ -64,7 +64,7 @@ public class CourseController {
     @DeleteMapping("/{courseId}")
     @Operation(summary = "Delete a draft course")
     public ResponseEntity<MessageResponse> deleteCourse(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             Authentication authentication) {
         courseService.deleteCourse(courseId, authentication.getName());
         return ResponseEntity.ok(new MessageResponse("Course deleted successfully"));
@@ -73,7 +73,7 @@ public class CourseController {
     @GetMapping("/{courseId}")
     @Operation(summary = "Get course by ID")
     public ResponseEntity<CourseResponse> getCourseById(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             Authentication authentication) {
         CourseResponse response = courseService.getCourseById(courseId, authentication.getName());
         return ResponseEntity.ok(response);
@@ -151,7 +151,7 @@ public class CourseController {
 
     @GetMapping("/public/{courseId}")
     @Operation(summary = "Get published course by ID")
-    public ResponseEntity<CourseResponse> getPublishedCourseById(@PathVariable Long courseId) {
+    public ResponseEntity<CourseResponse> getPublishedCourseById(@PathVariable String courseId) {
         CourseResponse response = courseService.getPublishedCourseById(courseId);
         return ResponseEntity.ok(response);
     }

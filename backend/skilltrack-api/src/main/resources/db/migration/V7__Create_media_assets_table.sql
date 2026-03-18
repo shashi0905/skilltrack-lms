@@ -1,20 +1,21 @@
 -- V7__Create_media_assets_table.sql
 CREATE TABLE media_assets (
-    id BIGSERIAL PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     original_filename VARCHAR(255) NOT NULL,
     storage_path VARCHAR(500) NOT NULL UNIQUE,
     content_type VARCHAR(100) NOT NULL,
     file_size_bytes BIGINT NOT NULL,
     media_type VARCHAR(20) NOT NULL CHECK (media_type IN ('IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT', 'PRESENTATION', 'SPREADSHEET', 'ARCHIVE', 'OTHER')),
     description VARCHAR(500),
-    uploaded_by BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    course_id BIGINT REFERENCES courses(id) ON DELETE CASCADE,
-    module_id BIGINT REFERENCES course_modules(id) ON DELETE CASCADE,
-    lesson_id BIGINT REFERENCES lessons(id) ON DELETE CASCADE,
+    uploaded_by VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    course_id VARCHAR(36) REFERENCES courses(id) ON DELETE CASCADE,
+    module_id VARCHAR(36) REFERENCES course_modules(id) ON DELETE CASCADE,
+    lesson_id VARCHAR(36) REFERENCES lessons(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     soft_deleted BOOLEAN DEFAULT FALSE,
-    version BIGINT DEFAULT 0
+    version BIGINT DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_media_assets_uploaded_by ON media_assets(uploaded_by);

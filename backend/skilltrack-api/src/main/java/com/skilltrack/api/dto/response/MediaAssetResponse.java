@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class MediaAssetResponse {
 
-    private Long id;
+    private String id;
     private String originalFilename;
     private String contentType;
     private Long fileSizeBytes;
@@ -22,11 +22,11 @@ public class MediaAssetResponse {
     public MediaAssetResponse() {}
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

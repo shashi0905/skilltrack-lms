@@ -38,11 +38,11 @@ public class ModuleService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public ModuleResponse createModule(Long courseId, ModuleCreateRequest request, String instructorEmail) {
+    public ModuleResponse createModule(String courseId, ModuleCreateRequest request, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         if (moduleRepository.existsByTitleAndCourse(request.getTitle(), course)) {
@@ -50,7 +50,7 @@ public class ModuleService {
         }
 
         CourseModule module = new CourseModule(request.getTitle(), request.getDescription(), course);
-        Integer nextOrderIndex = moduleRepository.findNextOrderIndex(course);
+        Integer nextOrderIndex = moduleRepository.findNextOrderIndex(courseId);
         module.setOrderIndex(nextOrderIndex);
 
         course.addModule(module);
@@ -59,11 +59,11 @@ public class ModuleService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public ModuleResponse updateModule(Long courseId, Long moduleId, ModuleCreateRequest request, String instructorEmail) {
+    public ModuleResponse updateModule(String courseId, String moduleId, ModuleCreateRequest request, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         CourseModule module = moduleRepository.findByIdAndCourse(moduleId, course)
@@ -82,11 +82,11 @@ public class ModuleService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public void deleteModule(Long courseId, Long moduleId, String instructorEmail) {
+    public void deleteModule(String courseId, String moduleId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         CourseModule module = moduleRepository.findByIdAndCourse(moduleId, course)
@@ -97,23 +97,23 @@ public class ModuleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ModuleResponse> getCourseModules(Long courseId, String instructorEmail) {
+    public List<ModuleResponse> getCourseModules(String courseId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
-        List<CourseModule> modules = moduleRepository.findByCourseOrderByOrderIndexAsc(course);
+        List<CourseModule> modules = moduleRepository.findByCourseWithLessonsOrderByOrderIndexAsc(course);
         return moduleMapper.toResponseList(modules);
     }
 
     @Transactional(readOnly = true)
-    public ModuleResponse getModuleById(Long courseId, Long moduleId, String instructorEmail) {
+    public ModuleResponse getModuleById(String courseId, String moduleId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         CourseModule module = moduleRepository.findByIdAndCourse(moduleId, course)

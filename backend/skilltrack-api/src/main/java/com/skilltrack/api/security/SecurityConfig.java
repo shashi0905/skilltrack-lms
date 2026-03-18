@@ -5,6 +5,7 @@ import com.skilltrack.api.security.oauth.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -56,6 +57,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
+    @Lazy
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;

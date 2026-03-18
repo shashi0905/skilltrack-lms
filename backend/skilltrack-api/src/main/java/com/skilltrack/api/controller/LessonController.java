@@ -30,8 +30,8 @@ public class LessonController {
     @PostMapping
     @Operation(summary = "Create a new lesson")
     public ResponseEntity<LessonResponse> createLesson(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
             @Valid @RequestBody LessonCreateRequest request,
             Authentication authentication) {
         LessonResponse response = lessonService.createLesson(courseId, moduleId, request, authentication.getName());
@@ -41,9 +41,9 @@ public class LessonController {
     @PutMapping("/{lessonId}")
     @Operation(summary = "Update a lesson")
     public ResponseEntity<LessonResponse> updateLesson(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
-            @PathVariable Long lessonId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
+            @PathVariable String lessonId,
             @Valid @RequestBody LessonCreateRequest request,
             Authentication authentication) {
         LessonResponse response = lessonService.updateLesson(courseId, moduleId, lessonId, request, authentication.getName());
@@ -53,9 +53,9 @@ public class LessonController {
     @DeleteMapping("/{lessonId}")
     @Operation(summary = "Delete a lesson")
     public ResponseEntity<MessageResponse> deleteLesson(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
-            @PathVariable Long lessonId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
+            @PathVariable String lessonId,
             Authentication authentication) {
         lessonService.deleteLesson(courseId, moduleId, lessonId, authentication.getName());
         return ResponseEntity.ok(new MessageResponse("Lesson deleted successfully"));
@@ -64,8 +64,8 @@ public class LessonController {
     @GetMapping
     @Operation(summary = "Get all lessons for a module")
     public ResponseEntity<List<LessonResponse>> getModuleLessons(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
             Authentication authentication) {
         List<LessonResponse> lessons = lessonService.getModuleLessons(courseId, moduleId, authentication.getName());
         return ResponseEntity.ok(lessons);
@@ -74,9 +74,9 @@ public class LessonController {
     @GetMapping("/{lessonId}")
     @Operation(summary = "Get lesson by ID")
     public ResponseEntity<LessonResponse> getLessonById(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
-            @PathVariable Long lessonId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
+            @PathVariable String lessonId,
             Authentication authentication) {
         LessonResponse response = lessonService.getLessonById(courseId, moduleId, lessonId, authentication.getName());
         return ResponseEntity.ok(response);

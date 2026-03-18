@@ -1,0 +1,57 @@
+# Test Profile Configuration - Uses H2 in-memory database
+spring:
+  application:
+    name: skilltrack-api-test
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+
+  # JPA/Hibernate Configuration for H2
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Create schema on startup, drop on shutdown
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+  # H2 Console (for debugging)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Flyway Configuration - Disabled for test profile
+  flyway:
+    enabled: false
+
+  # Mail Configuration - Mock for testing
+  mail:
+    host: localhost
+    port: 1025
+
+# Server Configuration
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: TestSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.skilltrack: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG

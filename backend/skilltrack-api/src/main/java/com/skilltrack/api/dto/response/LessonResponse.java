@@ -5,13 +5,13 @@ import java.util.List;
 
 public class LessonResponse {
 
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private String content;
     private Integer orderIndex;
     private Integer estimatedDurationMinutes;
-    private Long moduleId;
+    private String moduleId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<MediaAssetResponse> mediaAssets;
@@ -20,11 +20,11 @@ public class LessonResponse {
     public LessonResponse() {}
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -68,11 +68,11 @@ public class LessonResponse {
         this.estimatedDurationMinutes = estimatedDurationMinutes;
     }
 
-    public Long getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(Long moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 

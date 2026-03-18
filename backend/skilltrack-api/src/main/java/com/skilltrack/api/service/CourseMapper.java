@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {ModuleMapper.class})
 @Component
 public interface CourseMapper {
 
@@ -18,7 +18,7 @@ public interface CourseMapper {
     @Mapping(target = "instructorId", source = "instructor.id")
     @Mapping(target = "moduleCount", expression = "java(course.getModules().size())")
     @Mapping(target = "lessonCount", expression = "java(course.getTotalLessons())")
-    @Mapping(target = "modules", ignore = true)
+    @Mapping(target = "modules", source = "modules")
     CourseResponse toResponse(Course course);
 
     List<CourseResponse> toResponseList(List<Course> courses);

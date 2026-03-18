@@ -5,11 +5,11 @@ import java.util.List;
 
 public class ModuleResponse {
 
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private Integer orderIndex;
-    private Long courseId;
+    private String courseId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer lessonCount;
@@ -19,11 +19,11 @@ public class ModuleResponse {
     public ModuleResponse() {}
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -51,11 +51,11 @@ public class ModuleResponse {
         this.orderIndex = orderIndex;
     }
 
-    public Long getCourseId() {
+    public String getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(Long courseId) {
+    public void setCourseId(String courseId) {
         this.courseId = courseId;
     }
 

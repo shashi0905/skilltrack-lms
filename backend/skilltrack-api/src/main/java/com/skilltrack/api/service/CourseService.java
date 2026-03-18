@@ -4,6 +4,7 @@ import com.skilltrack.api.dto.request.CourseCreateRequest;
 import com.skilltrack.api.dto.request.CourseUpdateRequest;
 import com.skilltrack.api.dto.response.CourseResponse;
 import com.skilltrack.common.entity.Course;
+import com.skilltrack.common.entity.CourseModule;
 import com.skilltrack.common.entity.User;
 import com.skilltrack.common.enums.CourseStatus;
 import com.skilltrack.common.enums.DifficultyLevel;
@@ -61,11 +62,11 @@ public class CourseService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public CourseResponse updateCourse(Long courseId, CourseUpdateRequest request, String instructorEmail) {
+    public CourseResponse updateCourse(String courseId, CourseUpdateRequest request, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         // Check for duplicate title (excluding current course)
@@ -85,11 +86,11 @@ public class CourseService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public CourseResponse publishCourse(Long courseId, String instructorEmail) {
+    public CourseResponse publishCourse(String courseId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         if (!course.canBePublished()) {
@@ -102,11 +103,11 @@ public class CourseService {
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
-    public void deleteCourse(Long courseId, String instructorEmail) {
+    public void deleteCourse(String courseId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         if (course.isPublished()) {
@@ -117,11 +118,11 @@ public class CourseService {
     }
 
     @Transactional(readOnly = true)
-    public CourseResponse getCourseById(Long courseId, String instructorEmail) {
+    public CourseResponse getCourseById(String courseId, String instructorEmail) {
         User instructor = userRepository.findByEmail(instructorEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("Instructor not found"));
 
-        Course course = courseRepository.findByIdAndInstructor(courseId, instructor)
+        Course course = courseRepository.findCourseByIdAndInstructor(courseId, instructor)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found or access denied"));
 
         return courseMapper.toResponse(course);
@@ -190,12 +191,16 @@ public class CourseService {
     }
 
     @Transactional(readOnly = true)
-    public CourseResponse getPublishedCourseById(Long courseId) {
-        Course course = courseRepository.findById(courseId)
+    public CourseResponse getPublishedCourseById(String courseId) {
+        // First, get the course with modules
+        Course course = courseRepository.findPublishedCourseByIdWithModules(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
 
-        if (!course.isPublished()) {
-            throw new ResourceNotFoundException("Course not found");
+        // Then, initialize lessons for each module within the same transaction
+        // This avoids the MultipleBagFetchException while still loading all data
+        for (CourseModule module : course.getModules()) {
+            // Force initialization of lessons collection
+            module.getLessons().size();
         }
 
         return courseMapper.toResponse(course);

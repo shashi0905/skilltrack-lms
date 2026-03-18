@@ -89,6 +89,14 @@
             <artifactId>mapstruct</artifactId>
         </dependency>
 
+        <!-- Spring Boot DevTools for hot reload -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Redis (optional, for caching) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -100,6 +108,13 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- H2 Database for testing -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Test Dependencies -->

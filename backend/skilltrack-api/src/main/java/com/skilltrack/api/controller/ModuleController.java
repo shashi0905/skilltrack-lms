@@ -30,7 +30,7 @@ public class ModuleController {
     @PostMapping
     @Operation(summary = "Create a new module")
     public ResponseEntity<ModuleResponse> createModule(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             @Valid @RequestBody ModuleCreateRequest request,
             Authentication authentication) {
         ModuleResponse response = moduleService.createModule(courseId, request, authentication.getName());
@@ -40,8 +40,8 @@ public class ModuleController {
     @PutMapping("/{moduleId}")
     @Operation(summary = "Update a module")
     public ResponseEntity<ModuleResponse> updateModule(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
             @Valid @RequestBody ModuleCreateRequest request,
             Authentication authentication) {
         ModuleResponse response = moduleService.updateModule(courseId, moduleId, request, authentication.getName());
@@ -51,8 +51,8 @@ public class ModuleController {
     @DeleteMapping("/{moduleId}")
     @Operation(summary = "Delete a module")
     public ResponseEntity<MessageResponse> deleteModule(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
             Authentication authentication) {
         moduleService.deleteModule(courseId, moduleId, authentication.getName());
         return ResponseEntity.ok(new MessageResponse("Module deleted successfully"));
@@ -61,7 +61,7 @@ public class ModuleController {
     @GetMapping
     @Operation(summary = "Get all modules for a course")
     public ResponseEntity<List<ModuleResponse>> getCourseModules(
-            @PathVariable Long courseId,
+            @PathVariable String courseId,
             Authentication authentication) {
         List<ModuleResponse> modules = moduleService.getCourseModules(courseId, authentication.getName());
         return ResponseEntity.ok(modules);
@@ -70,8 +70,8 @@ public class ModuleController {
     @GetMapping("/{moduleId}")
     @Operation(summary = "Get module by ID")
     public ResponseEntity<ModuleResponse> getModuleById(
-            @PathVariable Long courseId,
-            @PathVariable Long moduleId,
+            @PathVariable String courseId,
+            @PathVariable String moduleId,
             Authentication authentication) {
         ModuleResponse response = moduleService.getModuleById(courseId, moduleId, authentication.getName());
         return ResponseEntity.ok(response);

@@ -1,7 +1,7 @@
 -- V6__Create_lessons_table.sql
 CREATE TABLE lessons (
-    id BIGSERIAL PRIMARY KEY,
-    module_id BIGINT NOT NULL REFERENCES course_modules(id) ON DELETE CASCADE,
+    id VARCHAR(36) PRIMARY KEY,
+    module_id VARCHAR(36) NOT NULL REFERENCES course_modules(id) ON DELETE CASCADE,
     title VARCHAR(200) NOT NULL,
     description VARCHAR(1000),
     content TEXT,
@@ -10,7 +10,8 @@ CREATE TABLE lessons (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     soft_deleted BOOLEAN DEFAULT FALSE,
-    version BIGINT DEFAULT 0
+    version BIGINT DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_lessons_module_id ON lessons(module_id);

@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LessonRepository extends JpaRepository<Lesson, Long> {
+public interface LessonRepository extends JpaRepository<Lesson, String> {
 
     // Find lessons by module
     List<Lesson> findByModuleOrderByOrderIndexAsc(CourseModule module);
 
     // Find lesson by ID and module (for ownership verification)
-    Optional<Lesson> findByIdAndModule(Long id, CourseModule module);
+    Optional<Lesson> findByIdAndModule(String id, CourseModule module);
 
     // Count lessons in a module
     long countByModule(CourseModule module);
@@ -51,11 +51,11 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     // Find all lessons for a course (across all modules)
     @Query("SELECT l FROM Lesson l JOIN l.module m WHERE m.course.id = :courseId ORDER BY m.orderIndex ASC, l.orderIndex ASC")
-    List<Lesson> findAllLessonsByCourseId(@Param("courseId") Long courseId);
+    List<Lesson> findAllLessonsByCourseId(@Param("courseId") String courseId);
 
     // Count total lessons in a course
     @Query("SELECT COUNT(l) FROM Lesson l JOIN l.module m WHERE m.course.id = :courseId")
-    long countLessonsByCourseId(@Param("courseId") Long courseId);
+    long countLessonsByCourseId(@Param("courseId") String courseId);
 
     // Find lessons with estimated duration
     @Query("SELECT l FROM Lesson l WHERE l.module = :module AND l.estimatedDurationMinutes IS NOT NULL ORDER BY l.orderIndex ASC")

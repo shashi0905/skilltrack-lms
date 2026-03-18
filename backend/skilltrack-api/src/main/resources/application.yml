@@ -68,6 +68,16 @@ spring:
     encoding: UTF-8
     cache: false  # Disable cache in development
 
+  # DevTools Configuration for hot reload
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+      exclude: static/**,public/**
+    livereload:
+      enabled: true
+      port: 35729
+
   # Redis Cache Configuration (optional)
   cache:
     type: simple  # Use simple cache for development, redis for production

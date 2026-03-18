@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CourseResponse {
 
-    private Long id;
+    private String id;
     private String title;
     private String description;
     private DifficultyLevel difficulty;
@@ -16,7 +16,7 @@ public class CourseResponse {
     private Integer estimatedDurationHours;
     private CourseStatus status;
     private String instructorName;
-    private Long instructorId;
+    private String instructorId;
     private LocalDateTime publishedAt;
     private Boolean hasDraftChanges;
     private LocalDateTime createdAt;
@@ -29,11 +29,11 @@ public class CourseResponse {
     public CourseResponse() {}
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -93,11 +93,11 @@ public class CourseResponse {
         this.instructorName = instructorName;
     }
 
-    public Long getInstructorId() {
+    public String getInstructorId() {
         return instructorId;
     }
 
-    public void setInstructorId(Long instructorId) {
+    public void setInstructorId(String instructorId) {
         this.instructorId = instructorId;
     }
 
