@@ -1,0 +1,80 @@
+<div class="instructor-dashboard">
+  <nav class="dashboard-nav">
+    <div class="nav-brand">
+      <h1>SkillTrack LMS</h1>
+      <span class="nav-subtitle">Instructor Dashboard</span>
+    </div>
+    <div class="nav-actions">
+      <span class="user-name">{{ getCurrentUser()?.fullName || getCurrentUser()?.email }}</span>
+      <button class="btn-secondary" routerLink="/dashboard">Main Dashboard</button>
+      <button class="btn-secondary" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <header class="dashboard-header">
+    <h2>My Courses</h2>
+    <button class="btn-primary" (click)="createCourse()">Create New Course</button>
+  </header>
+
+  @if (loading()) {
+    <div class="loading">Loading courses...</div>
+  }
+
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  @if (!loading() && courses().length === 0) {
+    <div class="empty-state">
+      <h3>No Courses Yet</h3>
+      <p>You haven't created any courses yet. Get started by creating your first course!</p>
+      <button class="btn-primary" (click)="createCourse()">Create Your First Course</button>
+    </div>
+  }
+
+  @if (!loading() && courses().length > 0) {
+    <div class="courses-grid">
+      @for (course of courses(); track course.id) {
+        <div class="course-card">
+          <div class="course-header">
+            <h3>{{ course.title }}</h3>
+            <span class="status-badge" [class.draft]="course.status === CourseStatus.DRAFT" 
+                  [class.published]="course.status === CourseStatus.PUBLISHED">
+              {{ course.status }}
+            </span>
+          </div>
+
+          <p class="course-description">{{ course.description }}</p>
+
+          <div class="course-meta">
+            <span class="difficulty">{{ course.difficulty }}</span>
+            <span class="duration">{{ course.estimatedDuration }} hours</span>
+            @if (course.hasDraftChanges && course.status === CourseStatus.PUBLISHED) {
+              <span class="draft-changes">Has unpublished changes</span>
+            }
+          </div>
+
+          <div class="course-tags">
+            @for (tag of course.tags; track tag) {
+              <span class="tag">{{ tag }}</span>
+            }
+          </div>
+
+          <div class="course-actions">
+            <button class="btn-secondary" (click)="viewCourse(course.id)">View</button>
+            <button class="btn-secondary" (click)="editCourse(course.id)">Edit</button>
+            
+            @if (course.status === CourseStatus.DRAFT) {
+              <button class="btn-primary" (click)="publishCourse(course)">Publish</button>
+              <button class="btn-danger" (click)="deleteCourse(course)">Delete</button>
+            }
+            
+            @if (course.status === CourseStatus.PUBLISHED && course.hasDraftChanges) {
+              <button class="btn-primary" (click)="publishCourse(course)">Publish Updates</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

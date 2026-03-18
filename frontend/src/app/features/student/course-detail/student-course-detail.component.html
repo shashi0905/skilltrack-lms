@@ -1,0 +1,120 @@
+<div class="course-detail">
+  <nav class="detail-nav">
+    <div class="nav-brand">
+      <h1>SkillTrack LMS</h1>
+      <span class="nav-subtitle">Course Details</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-secondary" (click)="goBack()">Back to Catalog</button>
+    </div>
+  </nav>
+
+  <div class="detail-content">
+    @if (loading()) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading course details...</p>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">
+        <p>{{ error() }}</p>
+        <button (click)="loadCourseData()" class="btn-primary">Try Again</button>
+      </div>
+    }
+
+    @if (course() && !loading()) {
+      <div class="course-container">
+        <header class="course-header">
+          <div class="header-content">
+            <div class="title-section">
+              <h1>{{ course()!.title }}</h1>
+              <span class="difficulty-badge" [class]="getDifficultyClass(course()!.difficulty)">
+                {{ course()!.difficulty }}
+              </span>
+            </div>
+            <p class="course-description">{{ course()!.description }}</p>
+            
+            <div class="course-meta">
+              <div class="meta-grid">
+                <div class="meta-item">
+                  <span class="meta-label">Instructor</span>
+                  <span class="meta-value">{{ course()!.instructorName }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Duration</span>
+                  <span class="meta-value">{{ course()!.estimatedDuration }} hours</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Status</span>
+                  <span class="meta-value status-published">{{ course()!.status }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Modules</span>
+                  <span class="meta-value">{{ modules().length }}</span>
+                </div>
+              </div>
+            </div>
+
+            @if (course()!.tags && course()!.tags.length > 0) {
+              <div class="course-tags">
+                <span class="tags-label">Tags:</span>
+                @for (tag of course()!.tags; track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="header-actions">
+            <button class="btn-primary btn-large">
+              Enroll in Course
+            </button>
+            <p class="enrollment-note">
+              <em>Enrollment functionality coming soon!</em>
+            </p>
+          </div>
+        </header>
+
+        <section class="course-content">
+          <h2>Course Content</h2>
+          
+          @if (modules().length === 0) {
+            <div class="empty-content">
+              <p>This course doesn't have any modules yet.</p>
+            </div>
+          } @else {
+            <div class="modules-list">
+              @for (module of modules(); track module.id) {
+                <div class="module-card">
+                  <div class="module-header">
+                    <h3>{{ module.title }}</h3>
+                    <span class="lesson-count">
+                      {{ module.lessons?.length || 0 }} lessons
+                    </span>
+                  </div>
+                  <p class="module-description">{{ module.description }}</p>
+                  
+                  @if (module.lessons && module.lessons.length > 0) {
+                    <div class="lessons-preview">
+                      <h4>Lessons:</h4>
+                      <ul class="lessons-list">
+                        @for (lesson of module.lessons; track lesson.id) {
+                          <li class="lesson-item">
+                            <span class="lesson-title">{{ lesson.title }}</span>
+                            <span class="lesson-description">{{ lesson.description }}</span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </section>
+      </div>
+    }
+  </div>
+</div>

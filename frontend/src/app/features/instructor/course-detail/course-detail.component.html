@@ -1,0 +1,154 @@
+<div class="course-detail">
+  <nav class="detail-nav">
+    <div class="nav-brand">
+      <h1>SkillTrack LMS</h1>
+      <span class="nav-subtitle">Course Management</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-secondary" routerLink="/instructor/dashboard">Back to Courses</button>
+    </div>
+  </nav>
+
+  <div class="detail-content">
+  @if (loading()) {
+    <div class="loading">Loading...</div>
+  }
+
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  @if (course()) {
+    <header class="course-header">
+      <div>
+        <h1>{{ course()!.title }}</h1>
+        <p class="course-description">{{ course()!.description }}</p>
+        <div class="course-meta">
+          <span class="status">{{ course()!.status }}</span>
+          <span>{{ course()!.difficulty }}</span>
+          <span>{{ course()!.estimatedDuration }} hours</span>
+          @if (course()!.hasDraftChanges) {
+            <span class="draft-changes">Has unpublished changes</span>
+          }
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" [routerLink]="['/instructor/courses', course()!.id, 'edit']">Edit Course</button>
+        <button class="btn-primary" (click)="publishCourse()">
+          {{ course()!.status === 'DRAFT' ? 'Publish' : 'Publish Updates' }}
+        </button>
+        <button class="btn-secondary" (click)="goBack()">Back</button>
+      </div>
+    </header>
+
+    <section class="modules-section">
+      <div class="section-header">
+        <h2>Modules & Lessons</h2>
+        <button class="btn-primary" (click)="openModuleForm()">Add Module</button>
+      </div>
+
+      @if (modules().length === 0) {
+        <div class="empty-state">
+          <p>No modules yet. Add your first module to get started.</p>
+        </div>
+      }
+
+      @for (module of modules(); track module.id) {
+        <div class="module-card">
+          <div class="module-header">
+            <h3>{{ module.title }}</h3>
+            <div class="module-actions">
+              <button class="btn-small" (click)="openLessonForm(module.id)">Add Lesson</button>
+              <button class="btn-small" (click)="openModuleForm(module)">Edit</button>
+              <button class="btn-small btn-danger" (click)="deleteModule(module.id)">Delete</button>
+            </div>
+          </div>
+          <p class="module-description">{{ module.description }}</p>
+
+          @if (module.lessons && module.lessons.length > 0) {
+            <div class="lessons-list">
+              @for (lesson of module.lessons; track lesson.id) {
+                <div class="lesson-item">
+                  <div class="lesson-info">
+                    <h4>{{ lesson.title }}</h4>
+                    <p>{{ lesson.description }}</p>
+                  </div>
+                  <div class="lesson-actions">
+                    <button class="btn-small" (click)="openLessonForm(module.id, lesson)">Edit</button>
+                    <button class="btn-small btn-danger" (click)="deleteLesson(module.id, lesson.id)">Delete</button>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="no-lessons">No lessons yet</p>
+          }
+        </div>
+      }
+    </section>
+
+    @if (showModuleForm()) {
+      <div class="modal-overlay" (click)="showModuleForm.set(false)">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <h3>{{ editingModuleId() ? 'Edit Module' : 'Add Module' }}</h3>
+          <form [formGroup]="moduleForm" (ngSubmit)="saveModule()">
+            <div class="form-group">
+              <label>Title *</label>
+              <input type="text" formControlName="title" placeholder="Module title">
+              @if (moduleForm.get('title')?.invalid && moduleForm.get('title')?.touched) {
+                <span class="error">Title is required</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Description *</label>
+              <textarea formControlName="description" rows="4" placeholder="Module description"></textarea>
+              @if (moduleForm.get('description')?.invalid && moduleForm.get('description')?.touched) {
+                <span class="error">Description is required</span>
+              }
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" (click)="showModuleForm.set(false)">Cancel</button>
+              <button type="submit" class="btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
+    @if (showLessonForm()) {
+      <div class="modal-overlay" (click)="showLessonForm.set(false)">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <h3>{{ editingLessonId() ? 'Edit Lesson' : 'Add Lesson' }}</h3>
+          <form [formGroup]="lessonForm" (ngSubmit)="saveLesson()">
+            <div class="form-group">
+              <label>Title *</label>
+              <input type="text" formControlName="title" placeholder="Lesson title">
+              @if (lessonForm.get('title')?.invalid && lessonForm.get('title')?.touched) {
+                <span class="error">Title is required</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Description *</label>
+              <textarea formControlName="description" rows="3" placeholder="Lesson description"></textarea>
+              @if (lessonForm.get('description')?.invalid && lessonForm.get('description')?.touched) {
+                <span class="error">Description is required</span>
+              }
+            </div>
+            <div class="form-group">
+              <label>Content *</label>
+              <textarea formControlName="content" rows="8" placeholder="Lesson content"></textarea>
+              @if (lessonForm.get('content')?.invalid && lessonForm.get('content')?.touched) {
+                <span class="error">Content is required</span>
+              }
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" (click)="showLessonForm.set(false)">Cancel</button>
+              <button type="submit" class="btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+  }
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="media-upload">
+  <div class="upload-area">
+    <input 
+      type="file" 
+      #fileInput
+      (change)="onFileSelected($event)"
+      accept=".pdf,.jpg,.jpeg,.png,.mp4,.doc,.docx"
+      [disabled]="uploading()">
+
+    @if (!selectedFile()) {
+      <button class="btn-secondary" (click)="fileInput.click()" [disabled]="uploading()">
+        Choose File
+      </button>
+    }
+
+    @if (selectedFile()) {
+      <div class="file-info">
+        <span class="file-name">{{ selectedFile()!.name }}</span>
+        <span class="file-size">({{ (selectedFile()!.size / 1024 / 1024).toFixed(2) }} MB)</span>
+        <button class="btn-small" (click)="clearSelection()" [disabled]="uploading()">×</button>
+      </div>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  @if (selectedFile() && !uploading()) {
+    <button class="btn-primary" (click)="uploadFile()">Upload</button>
+  }
+
+  @if (uploading()) {
+    <div class="uploading">Uploading...</div>
+  }
+</div>

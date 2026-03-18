@@ -1,0 +1,102 @@
+<div class="course-form-container">
+  <nav class="form-nav">
+    <div class="nav-brand">
+      <h1>SkillTrack LMS</h1>
+      <span class="nav-subtitle">{{ isEditMode() ? 'Edit Course' : 'Create Course' }}</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-secondary" routerLink="/instructor/dashboard">Back to Courses</button>
+    </div>
+  </nav>
+
+  <div class="form-content">
+
+  @if (loading()) {
+    <div class="loading">Loading...</div>
+  }
+
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  <form [formGroup]="courseForm" (ngSubmit)="onSubmit()" class="course-form">
+    <div class="form-group">
+      <label for="title">Course Title *</label>
+      <input 
+        id="title" 
+        type="text" 
+        formControlName="title" 
+        placeholder="Enter course title"
+        [class.invalid]="courseForm.get('title')?.invalid && courseForm.get('title')?.touched">
+      @if (courseForm.get('title')?.invalid && courseForm.get('title')?.touched) {
+        <span class="error">Title is required (max 200 characters)</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description *</label>
+      <textarea 
+        id="description" 
+        formControlName="description" 
+        rows="5"
+        placeholder="Describe what students will learn"
+        [class.invalid]="courseForm.get('description')?.invalid && courseForm.get('description')?.touched">
+      </textarea>
+      @if (courseForm.get('description')?.invalid && courseForm.get('description')?.touched) {
+        <span class="error">Description is required (max 2000 characters)</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="difficulty">Difficulty Level *</label>
+      <select id="difficulty" formControlName="difficulty">
+        @for (level of difficultyLevels; track level) {
+          <option [value]="level">{{ level }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="estimatedDuration">Estimated Duration (hours) *</label>
+      <input 
+        id="estimatedDuration" 
+        type="number" 
+        formControlName="estimatedDuration" 
+        min="1"
+        placeholder="Enter duration in hours"
+        [class.invalid]="courseForm.get('estimatedDuration')?.invalid && courseForm.get('estimatedDuration')?.touched">
+      @if (courseForm.get('estimatedDuration')?.invalid && courseForm.get('estimatedDuration')?.touched) {
+        <span class="error">Duration must be at least 1 hour</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Tags</label>
+      <div class="tag-input-container">
+        <input 
+          type="text" 
+          [value]="tagInput()"
+          (input)="tagInput.set($any($event.target).value)"
+          (keyup.enter)="addTag()"
+          placeholder="Add a tag and press Enter">
+        <button type="button" class="btn-secondary" (click)="addTag()">Add Tag</button>
+      </div>
+      <div class="tags-list">
+        @for (tag of courseForm.get('tags')?.value; track tag) {
+          <span class="tag">
+            {{ tag }}
+            <button type="button" (click)="removeTag(tag)">&times;</button>
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        {{ isEditMode() ? 'Update Course' : 'Create Course' }}
+      </button>
+    </div>
+  </form>
+  </div>
+</div>

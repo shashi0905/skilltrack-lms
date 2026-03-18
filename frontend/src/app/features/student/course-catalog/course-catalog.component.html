@@ -1,0 +1,128 @@
+<div class="course-catalog">
+  <nav class="catalog-nav">
+    <div class="nav-brand">
+      <h1>SkillTrack LMS</h1>
+      <span class="nav-subtitle">Course Catalog</span>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-secondary" routerLink="/dashboard">Back to Dashboard</button>
+    </div>
+  </nav>
+
+  <div class="catalog-content">
+    <header class="catalog-header">
+      <div class="header-content">
+        <h1>Discover Courses</h1>
+        <p>Browse our collection of published courses and start learning today!</p>
+      </div>
+      
+      <div class="search-section">
+        <div class="search-box">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (keyup.enter)="onSearch()"
+            placeholder="Search courses..."
+            class="search-input">
+          <button (click)="onSearch()" class="search-btn">Search</button>
+        </div>
+      </div>
+    </header>
+
+    @if (loading()) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading courses...</p>
+      </div>
+    }
+
+    @if (error()) {
+      <div class="error-message">
+        <p>{{ error() }}</p>
+        <button (click)="loadCourses()" class="btn-primary">Try Again</button>
+      </div>
+    }
+
+    @if (!loading() && !error()) {
+      <div class="catalog-results">
+        <div class="results-info">
+          <p>{{ totalElements() }} courses found</p>
+        </div>
+
+        @if (courses().length === 0) {
+          <div class="empty-state">
+            <h3>No courses found</h3>
+            <p>Try adjusting your search criteria or check back later for new courses.</p>
+          </div>
+        } @else {
+          <div class="courses-grid">
+            @for (course of courses(); track course.id) {
+              <div class="course-card">
+                <div class="course-header">
+                  <h3>{{ course.title }}</h3>
+                  <span class="difficulty-badge" [class]="getDifficultyClass(course.difficulty)">
+                    {{ course.difficulty }}
+                  </span>
+                </div>
+                
+                <p class="course-description">{{ course.description }}</p>
+                
+                <div class="course-meta">
+                  <div class="meta-item">
+                    <span class="meta-label">Instructor:</span>
+                    <span class="meta-value">{{ course.instructorName }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="meta-label">Duration:</span>
+                    <span class="meta-value">{{ course.estimatedDuration }} hours</span>
+                  </div>
+                </div>
+
+                @if (course.tags && course.tags.length > 0) {
+                  <div class="course-tags">
+                    @for (tag of course.tags; track tag) {
+                      <span class="tag">{{ tag }}</span>
+                    }
+                  </div>
+                }
+
+                <div class="course-actions">
+                  <button class="btn-primary" [routerLink]="['/student/courses', course.id]">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (totalPages() > 1) {
+            <div class="pagination">
+              <button 
+                (click)="onPageChange(currentPage() - 1)"
+                [disabled]="currentPage() === 0"
+                class="page-btn">
+                Previous
+              </button>
+              
+              @for (page of [].constructor(totalPages()); track $index) {
+                <button 
+                  (click)="onPageChange($index)"
+                  [class.active]="currentPage() === $index"
+                  class="page-btn page-number">
+                  {{ $index + 1 }}
+                </button>
+              }
+              
+              <button 
+                (click)="onPageChange(currentPage() + 1)"
+                [disabled]="currentPage() === totalPages() - 1"
+                class="page-btn">
+                Next
+              </button>
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>

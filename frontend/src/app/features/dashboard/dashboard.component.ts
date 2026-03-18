@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
+import { RoleName } from '@core/models/auth.model';
 
 /**
  * Dashboard Component
  * 
  * Main landing page after successful login.
+ * Redirects users to appropriate dashboards based on their roles.
  */
 @Component({
   selector: 'app-dashboard',
@@ -27,7 +29,6 @@ import { AuthService } from '@core/services/auth.service';
       <div class="dashboard-content">
         <div class="dashboard-card">
           <h2>Welcome to SkillTrack!</h2>
-          <p>Your authentication is working perfectly. This is the protected dashboard page.</p>
           
           <div class="user-info">
             <h3>Your Profile</h3>
@@ -37,16 +38,48 @@ import { AuthService } from '@core/services/auth.service';
             <p><strong>Email Status:</strong> {{ currentUser?.emailVerificationStatus }}</p>
           </div>
 
-          <div class="actions">
-            <p>This is a protected route. Only authenticated users can access this page.</p>
-            <p class="mt-3">Future features will include:</p>
-            <ul>
-              <li>Course catalog</li>
-              <li>My enrollments</li>
-              <li>Progress tracking</li>
-              <li>Instructor dashboard (for instructors)</li>
-              <li>Admin panel (for admins)</li>
-            </ul>
+          <div class="role-actions">
+            @if (isInstructor()) {
+              <div class="action-section">
+                <h3>Instructor Dashboard</h3>
+                <p>Manage your courses, create new content, and track your teaching progress.</p>
+                <button (click)="goToInstructorDashboard()" class="btn btn-primary">
+                  Go to Course Management
+                </button>
+              </div>
+            }
+
+            @if (isAdmin()) {
+              <div class="action-section">
+                <h3>Admin Panel</h3>
+                <p>Manage users, courses, and system settings.</p>
+                <button (click)="goToAdmin()" class="btn btn-primary">
+                  Go to Admin Panel
+                </button>
+              </div>
+            }
+
+            @if (isStudent()) {
+              <div class="action-section">
+                <h3>Student Dashboard</h3>
+                <p>Browse courses, track your learning progress, and manage enrollments.</p>
+                <button (click)="goToCourseCatalog()" class="btn btn-primary">
+                  Browse Course Catalog
+                </button>
+                <!-- Debug info -->
+                <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                  <p>Debug: User roles = {{ currentUser?.roles?.join(', ') }}</p>
+                  <p>If you're not redirected automatically, click the button above.</p>
+                </div>
+              </div>
+            }
+
+            @if (!hasAnyRole()) {
+              <div class="action-section">
+                <h3>Getting Started</h3>
+                <p>It looks like you don't have any roles assigned yet. Please contact an administrator.</p>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -131,45 +164,123 @@ import { AuthService } from '@core/services/auth.service';
         color: #666;
         line-height: 1.6;
       }
-
-      ul {
-        margin: 12px 0 0 24px;
-        color: #666;
-        line-height: 1.8;
-      }
     }
 
     .user-info {
       background: #f8f9fa;
       padding: 20px;
       border-radius: 8px;
-      margin-top: 24px;
+      margin-bottom: 24px;
 
       strong {
         color: #333;
       }
     }
 
-    .actions {
+    .role-actions {
       margin-top: 24px;
-      padding-top: 24px;
-      border-top: 1px solid #eee;
     }
 
-    .mt-3 {
-      margin-top: 1.5rem;
+    .action-section {
+      background: #f8f9fa;
+      padding: 24px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border-left: 4px solid #1976d2;
+
+      h3 {
+        margin: 0 0 12px 0;
+        color: #1976d2;
+      }
+
+      p {
+        margin-bottom: 16px;
+      }
+    }
+
+    .btn-primary {
+      background: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #1565c0;
+        transform: translateY(-1px);
+      }
+    }
+
+    .coming-soon {
+      background: #fff3e0;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid #ff9800;
+
+      p {
+        margin: 0;
+        color: #e65100;
+      }
     }
   `]
 })
-export class DashboardComponent {
-  currentUser = this.authService.getCurrentUser();
+export class DashboardComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  protected currentUser = this.authService.getCurrentUser();
 
-  logout(): void {
+  ngOnInit(): void {
+    // Debug logging
+    console.log('Dashboard - Current user:', this.currentUser);
+    console.log('Dashboard - Is instructor:', this.isInstructor());
+    console.log('Dashboard - Is student:', this.isStudent());
+    console.log('Dashboard - Is admin:', this.isAdmin());
+    
+    // Auto-redirect users to their appropriate dashboards
+    if (this.isInstructor()) {
+      console.log('Dashboard - Redirecting to instructor dashboard');
+      this.router.navigate(['/instructor/dashboard']);
+    } else if (this.isStudent()) {
+      console.log('Dashboard - Redirecting to student course catalog');
+      this.router.navigate(['/student/courses']);
+    }
+  }
+
+  protected isInstructor(): boolean {
+    return this.authService.hasRole(RoleName.ROLE_INSTRUCTOR);
+  }
+
+  protected isAdmin(): boolean {
+    return this.authService.hasRole(RoleName.ROLE_ADMIN);
+  }
+
+  protected isStudent(): boolean {
+    return this.authService.hasRole(RoleName.ROLE_STUDENT);
+  }
+
+  protected hasAnyRole(): boolean {
+    const user = this.currentUser;
+    return !!(user?.roles && user.roles.length > 0);
+  }
+
+  protected goToInstructorDashboard(): void {
+    this.router.navigate(['/instructor/dashboard']);
+  }
+
+  protected goToAdmin(): void {
+    this.router.navigate(['/admin']);
+  }
+
+  protected goToCourseCatalog(): void {
+    this.router.navigate(['/student/courses']);
+  }
+
+  protected logout(): void {
     this.authService.logout().subscribe({
       next: () => {
         this.router.navigate(['/auth/login']);

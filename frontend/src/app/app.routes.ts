@@ -58,6 +58,54 @@ export const routes: Routes = [
     data: { roles: [RoleName.ROLE_ADMIN] }
   },
   {
+    path: 'instructor',
+    canActivate: [RoleGuard],
+    data: { roles: [RoleName.ROLE_INSTRUCTOR] },
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/instructor/instructor-dashboard/instructor-dashboard.component').then(m => m.InstructorDashboardComponent)
+      },
+      {
+        path: 'courses/create',
+        loadComponent: () => import('./features/instructor/course-form/course-form.component').then(m => m.CourseFormComponent)
+      },
+      {
+        path: 'courses/:id',
+        loadComponent: () => import('./features/instructor/course-detail/course-detail.component').then(m => m.CourseDetailComponent)
+      },
+      {
+        path: 'courses/:id/edit',
+        loadComponent: () => import('./features/instructor/course-form/course-form.component').then(m => m.CourseFormComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: 'student',
+    canActivate: [RoleGuard],
+    data: { roles: [RoleName.ROLE_STUDENT] },
+    children: [
+      {
+        path: 'courses',
+        loadComponent: () => import('./features/student/course-catalog/course-catalog.component').then(m => m.CourseCatalogComponent)
+      },
+      {
+        path: 'courses/:id',
+        loadComponent: () => import('./features/student/course-detail/student-course-detail.component').then(m => m.StudentCourseDetailComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'courses',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
     path: 'forbidden',
     loadComponent: () => import('./features/forbidden/forbidden.component').then(m => m.ForbiddenComponent)
   },
