@@ -154,6 +154,14 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/*MapperImpl.class</exclude>
+                            <exclude>**/config/*.class</exclude>
+                            <exclude>**/SkillTrackApiApplication.class</exclude>
+                            <exclude>**/security/oauth/*.class</exclude>
+                        </excludes>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
