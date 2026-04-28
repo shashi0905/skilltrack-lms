@@ -38,6 +38,16 @@ public class MediaAsset extends BaseEntity {
     @Column(length = 500)
     private String description;
 
+    @Column(name = "hls_manifest_url", length = 500)
+    private String hlsManifestUrl;
+
+    @Column(name = "video_duration_seconds")
+    private Integer videoDurationSeconds;
+
+    @Size(max = 100, message = "Watermark text must not exceed 100 characters")
+    @Column(name = "watermark_text", length = 100)
+    private String watermarkText;
+
     @NotNull(message = "Uploaded by user is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by", nullable = false)
@@ -103,6 +113,29 @@ public class MediaAsset extends BaseEntity {
         return lastDotIndex > 0 ? originalFilename.substring(lastDotIndex + 1).toLowerCase() : "";
     }
 
+    public boolean isVideoProcessed() {
+        return isVideo() && hlsManifestUrl != null && !hlsManifestUrl.trim().isEmpty();
+    }
+
+    public boolean requiresVideoProcessing() {
+        return isVideo() && !isVideoProcessed();
+    }
+
+    public String getFormattedVideoDuration() {
+        if (videoDurationSeconds == null) {
+            return "Unknown";
+        }
+        int hours = videoDurationSeconds / 3600;
+        int minutes = (videoDurationSeconds % 3600) / 60;
+        int seconds = videoDurationSeconds % 60;
+        
+        if (hours > 0) {
+            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%d:%02d", minutes, seconds);
+        }
+    }
+
     // Getters and Setters
     public String getOriginalFilename() {
         return originalFilename;
@@ -150,6 +183,30 @@ public class MediaAsset extends BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getHlsManifestUrl() {
+        return hlsManifestUrl;
+    }
+
+    public void setHlsManifestUrl(String hlsManifestUrl) {
+        this.hlsManifestUrl = hlsManifestUrl;
+    }
+
+    public Integer getVideoDurationSeconds() {
+        return videoDurationSeconds;
+    }
+
+    public void setVideoDurationSeconds(Integer videoDurationSeconds) {
+        this.videoDurationSeconds = videoDurationSeconds;
+    }
+
+    public String getWatermarkText() {
+        return watermarkText;
+    }
+
+    public void setWatermarkText(String watermarkText) {
+        this.watermarkText = watermarkText;
     }
 
     public User getUploadedBy() {

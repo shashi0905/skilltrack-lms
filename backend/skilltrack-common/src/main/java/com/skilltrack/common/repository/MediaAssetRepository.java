@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MediaAssetRepository extends JpaRepository<MediaAsset, Long> {
+public interface MediaAssetRepository extends JpaRepository<MediaAsset, String> {
 
     // Find media assets by course
     List<MediaAsset> findByCourseOrderByCreatedAtDesc(Course course);

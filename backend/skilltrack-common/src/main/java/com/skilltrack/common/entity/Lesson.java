@@ -1,5 +1,7 @@
 package com.skilltrack.common.entity;
 
+import com.skilltrack.common.enums.ContentType;
+import com.skilltrack.common.enums.ProcessingStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +33,22 @@ public class Lesson extends BaseEntity {
     @Column(name = "estimated_duration_minutes")
     private Integer estimatedDurationMinutes;
 
+    @NotNull(message = "Content type is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "content_type", nullable = false, length = 20)
+    private ContentType contentType = ContentType.TEXT;
+
+    @NotNull(message = "Processing status is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "processing_status", nullable = false, length = 20)
+    private ProcessingStatus processingStatus = ProcessingStatus.READY;
+
+    @Column(name = "video_duration_seconds")
+    private Integer videoDurationSeconds;
+
+    @Column(name = "hls_manifest_url", length = 500)
+    private String hlsManifestUrl;
+
     @NotNull(message = "Module is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id", nullable = false)
@@ -38,6 +56,9 @@ public class Lesson extends BaseEntity {
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<MediaAsset> mediaAssets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<QuizQuestion> quizQuestions = new ArrayList<>();
 
     // Constructors
     public Lesson() {}
@@ -47,6 +68,16 @@ public class Lesson extends BaseEntity {
         this.description = description;
         this.content = content;
         this.module = module;
+        this.contentType = ContentType.TEXT;
+        this.processingStatus = ProcessingStatus.READY;
+    }
+
+    public Lesson(String title, String description, ContentType contentType, CourseModule module) {
+        this.title = title;
+        this.description = description;
+        this.contentType = contentType;
+        this.module = module;
+        this.processingStatus = contentType.requiresProcessing() ? ProcessingStatus.PENDING : ProcessingStatus.READY;
     }
 
     // Business methods
@@ -60,6 +91,46 @@ public class Lesson extends BaseEntity {
 
     public int getMediaAssetCount() {
         return mediaAssets.size();
+    }
+
+    public boolean isVideoLesson() {
+        return contentType == ContentType.VIDEO;
+    }
+
+    public boolean isPdfLesson() {
+        return contentType == ContentType.PDF;
+    }
+
+    public boolean isTextLesson() {
+        return contentType == ContentType.TEXT;
+    }
+
+    public boolean isQuizLesson() {
+        return contentType == ContentType.QUIZ;
+    }
+
+    public boolean isImageLesson() {
+        return contentType == ContentType.IMAGE;
+    }
+
+    public boolean isReadyForStudents() {
+        return processingStatus.canBeAccessed();
+    }
+
+    public boolean requiresProcessing() {
+        return contentType.requiresProcessing();
+    }
+
+    public boolean isProcessing() {
+        return processingStatus.isInProgress();
+    }
+
+    public int getQuizQuestionCount() {
+        return quizQuestions.size();
+    }
+
+    public boolean hasQuizQuestions() {
+        return !quizQuestions.isEmpty();
     }
 
     // Getters and Setters
@@ -107,6 +178,44 @@ public class Lesson extends BaseEntity {
         markModuleAsChanged();
     }
 
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+        // Reset processing status based on content type
+        this.processingStatus = contentType.requiresProcessing() ? ProcessingStatus.PENDING : ProcessingStatus.READY;
+        markModuleAsChanged();
+    }
+
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+        markModuleAsChanged();
+    }
+
+    public Integer getVideoDurationSeconds() {
+        return videoDurationSeconds;
+    }
+
+    public void setVideoDurationSeconds(Integer videoDurationSeconds) {
+        this.videoDurationSeconds = videoDurationSeconds;
+        markModuleAsChanged();
+    }
+
+    public String getHlsManifestUrl() {
+        return hlsManifestUrl;
+    }
+
+    public void setHlsManifestUrl(String hlsManifestUrl) {
+        this.hlsManifestUrl = hlsManifestUrl;
+        markModuleAsChanged();
+    }
+
     public CourseModule getModule() {
         return module;
     }
@@ -121,6 +230,14 @@ public class Lesson extends BaseEntity {
 
     public void setMediaAssets(List<MediaAsset> mediaAssets) {
         this.mediaAssets = mediaAssets;
+    }
+
+    public List<QuizQuestion> getQuizQuestions() {
+        return quizQuestions;
+    }
+
+    public void setQuizQuestions(List<QuizQuestion> quizQuestions) {
+        this.quizQuestions = quizQuestions;
     }
 
     // Helper methods
@@ -140,6 +257,19 @@ public class Lesson extends BaseEntity {
     public void removeMediaAsset(MediaAsset mediaAsset) {
         mediaAssets.remove(mediaAsset);
         mediaAsset.setLesson(null);
+        markModuleAsChanged();
+    }
+
+    // Helper methods for managing quiz questions
+    public void addQuizQuestion(QuizQuestion quizQuestion) {
+        quizQuestions.add(quizQuestion);
+        quizQuestion.setLesson(this);
+        markModuleAsChanged();
+    }
+
+    public void removeQuizQuestion(QuizQuestion quizQuestion) {
+        quizQuestions.remove(quizQuestion);
+        quizQuestion.setLesson(null);
         markModuleAsChanged();
     }
 }

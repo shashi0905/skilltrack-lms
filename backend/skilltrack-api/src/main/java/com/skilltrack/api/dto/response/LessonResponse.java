@@ -1,5 +1,8 @@
 package com.skilltrack.api.dto.response;
 
+import com.skilltrack.common.enums.ContentType;
+import com.skilltrack.common.enums.ProcessingStatus;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,10 +14,15 @@ public class LessonResponse {
     private String content;
     private Integer orderIndex;
     private Integer estimatedDurationMinutes;
+    private ContentType contentType;
+    private ProcessingStatus processingStatus;
+    private Integer videoDurationSeconds;
+    private String hlsManifestUrl;
     private String moduleId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<MediaAssetResponse> mediaAssets;
+    private List<QuizQuestionResponse> quizQuestions;
 
     // Constructors
     public LessonResponse() {}
@@ -68,6 +76,38 @@ public class LessonResponse {
         this.estimatedDurationMinutes = estimatedDurationMinutes;
     }
 
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
+    public ProcessingStatus getProcessingStatus() {
+        return processingStatus;
+    }
+
+    public void setProcessingStatus(ProcessingStatus processingStatus) {
+        this.processingStatus = processingStatus;
+    }
+
+    public Integer getVideoDurationSeconds() {
+        return videoDurationSeconds;
+    }
+
+    public void setVideoDurationSeconds(Integer videoDurationSeconds) {
+        this.videoDurationSeconds = videoDurationSeconds;
+    }
+
+    public String getHlsManifestUrl() {
+        return hlsManifestUrl;
+    }
+
+    public void setHlsManifestUrl(String hlsManifestUrl) {
+        this.hlsManifestUrl = hlsManifestUrl;
+    }
+
     public String getModuleId() {
         return moduleId;
     }
@@ -98,5 +138,13 @@ public class LessonResponse {
 
     public void setMediaAssets(List<MediaAssetResponse> mediaAssets) {
         this.mediaAssets = mediaAssets;
+    }
+
+    public List<QuizQuestionResponse> getQuizQuestions() {
+        return quizQuestions;
+    }
+
+    public void setQuizQuestions(List<QuizQuestionResponse> quizQuestions) {
+        this.quizQuestions = quizQuestions;
     }
 }

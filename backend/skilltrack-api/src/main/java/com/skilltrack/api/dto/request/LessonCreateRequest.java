@@ -1,6 +1,8 @@
 package com.skilltrack.api.dto.request;
 
+import com.skilltrack.common.enums.ContentType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
@@ -18,6 +20,9 @@ public class LessonCreateRequest {
     @Positive(message = "Estimated duration must be positive")
     private Integer estimatedDurationMinutes;
 
+    @NotNull(message = "Content type is required")
+    private ContentType contentType = ContentType.TEXT;
+
     // Constructors
     public LessonCreateRequest() {}
 
@@ -25,6 +30,13 @@ public class LessonCreateRequest {
         this.title = title;
         this.description = description;
         this.content = content;
+        this.contentType = ContentType.TEXT;
+    }
+
+    public LessonCreateRequest(String title, String description, ContentType contentType) {
+        this.title = title;
+        this.description = description;
+        this.contentType = contentType;
     }
 
     // Getters and Setters
@@ -58,5 +70,13 @@ public class LessonCreateRequest {
 
     public void setEstimatedDurationMinutes(Integer estimatedDurationMinutes) {
         this.estimatedDurationMinutes = estimatedDurationMinutes;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
     }
 }

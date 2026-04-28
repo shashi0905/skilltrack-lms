@@ -68,6 +68,14 @@ spring:
     encoding: UTF-8
     cache: false  # Disable cache in development
 
+  # Multipart File Upload Configuration
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 110MB
+      file-size-threshold: 2KB
+
   # DevTools Configuration for hot reload
   devtools:
     restart:
@@ -127,6 +135,13 @@ app:
   from-email: ${FROM_EMAIL:noreply@skilltrack.com}  # Default sender email
   oauth2:
     redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:4200/oauth2/redirect}  # OAuth2 redirect after success
+  upload:
+    directory: ${UPLOAD_DIRECTORY:uploads}
+    max-file-size: ${MAX_FILE_SIZE:104857600}  # 100MB
+  video:
+    hls-directory: ${HLS_DIRECTORY:hls}
+    ffmpeg-path: ${FFMPEG_PATH:ffmpeg}
+    signed-url-expiry-hours: ${SIGNED_URL_EXPIRY_HOURS:24}
 
 # Email Verification Configuration
 email-verification:

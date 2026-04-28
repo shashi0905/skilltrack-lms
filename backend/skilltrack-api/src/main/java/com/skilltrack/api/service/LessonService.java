@@ -6,6 +6,7 @@ import com.skilltrack.common.entity.Course;
 import com.skilltrack.common.entity.CourseModule;
 import com.skilltrack.common.entity.Lesson;
 import com.skilltrack.common.entity.User;
+import com.skilltrack.common.enums.ContentType;
 import com.skilltrack.common.exception.BusinessException;
 import com.skilltrack.common.exception.ResourceNotFoundException;
 import com.skilltrack.common.repository.CourseModuleRepository;
@@ -57,8 +58,13 @@ public class LessonService {
             throw new BusinessException("A lesson with this title already exists in this module");
         }
 
-        Lesson lesson = new Lesson(request.getTitle(), request.getDescription(), request.getContent(), module);
+        Lesson lesson = new Lesson(request.getTitle(), request.getDescription(), request.getContentType(), module);
         lesson.setEstimatedDurationMinutes(request.getEstimatedDurationMinutes());
+        
+        // Set content only for text lessons
+        if (request.getContentType() == ContentType.TEXT) {
+            lesson.setContent(request.getContent());
+        }
         
         Integer nextOrderIndex = lessonRepository.findNextOrderIndex(module);
         lesson.setOrderIndex(nextOrderIndex);
@@ -89,8 +95,17 @@ public class LessonService {
 
         lesson.setTitle(request.getTitle());
         lesson.setDescription(request.getDescription());
-        lesson.setContent(request.getContent());
         lesson.setEstimatedDurationMinutes(request.getEstimatedDurationMinutes());
+        
+        // Update content type if changed
+        if (!lesson.getContentType().equals(request.getContentType())) {
+            lesson.setContentType(request.getContentType());
+        }
+        
+        // Set content only for text lessons
+        if (request.getContentType() == ContentType.TEXT) {
+            lesson.setContent(request.getContent());
+        }
 
         Lesson savedLesson = lessonRepository.save(lesson);
         return lessonMapper.toResponse(savedLesson);
