@@ -1,0 +1,769 @@
+{
+	"info": {
+		"_postman_id": "skilltrack-phase2-api",
+		"name": "SkillTrack Phase 2 - Learning Catalog Management",
+		"description": "Complete API collection for testing Phase 2 course management functionality",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Course Management",
+			"item": [
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Spring Boot Fundamentals\",\n  \"description\": \"Learn the basics of Spring Boot framework for building enterprise applications\",\n  \"difficulty\": \"BEGINNER\",\n  \"tags\": \"spring,java,backend,web\",\n  \"estimatedDurationHours\": 20\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses"]
+						}
+					}
+				},
+				{
+					"name": "Update Course",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Advanced Spring Boot\",\n  \"description\": \"Deep dive into Spring Boot advanced features and best practices\",\n  \"difficulty\": \"INTERMEDIATE\",\n  \"tags\": \"spring,java,advanced,microservices\",\n  \"estimatedDurationHours\": 35\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get My Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/my-courses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "my-courses"]
+						}
+					}
+				},
+				{
+					"name": "Get My Courses (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/my-courses/paged?page=0&size=10&sort=createdAt,desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "my-courses", "paged"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Draft Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/my-courses/status/DRAFT",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "my-courses", "status", "DRAFT"]
+						}
+					}
+				},
+				{
+					"name": "Get Published Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/my-courses/status/PUBLISHED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "my-courses", "status", "PUBLISHED"]
+						}
+					}
+				},
+				{
+					"name": "Get Courses with Draft Changes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/my-courses/draft-changes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "my-courses", "draft-changes"]
+						}
+					}
+				},
+				{
+					"name": "Publish Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/publish",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "publish"]
+						}
+					}
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Course Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/statistics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "statistics"]
+						}
+					}
+				}
+			]
+		}
+,
+		{
+			"name": "Module Management",
+			"item": [
+				{
+					"name": "Create Module",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Introduction to Spring Boot\",\n  \"description\": \"Getting started with Spring Boot, project setup, and basic concepts\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules"]
+						}
+					}
+				},
+				{
+					"name": "Update Module",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Spring Boot Fundamentals\",\n  \"description\": \"Core concepts, auto-configuration, and dependency injection in Spring Boot\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Course Modules",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules"]
+						}
+					}
+				},
+				{
+					"name": "Get Module by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Module",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}"]
+						}
+					}
+				}
+			]
+		}
+,
+		{
+			"name": "Lesson Management",
+			"item": [
+				{
+					"name": "Create Lesson",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Setting up Spring Boot Project\",\n  \"description\": \"Learn how to create a new Spring Boot project using Spring Initializr\",\n  \"content\": \"# Setting up Spring Boot Project\\n\\nIn this lesson, we'll learn how to create a new Spring Boot project...\\n\\n## Prerequisites\\n- Java 17 or higher\\n- Maven or Gradle\\n- IDE (IntelliJ IDEA, Eclipse, or VS Code)\\n\\n## Steps\\n1. Go to https://start.spring.io\\n2. Select project metadata\\n3. Add dependencies\\n4. Generate and download project\",\n  \"estimatedDurationMinutes\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}/lessons",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}", "lessons"]
+						}
+					}
+				},
+				{
+					"name": "Update Lesson",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Creating Your First Spring Boot Application\",\n  \"description\": \"Step-by-step guide to create and run your first Spring Boot application\",\n  \"content\": \"# Creating Your First Spring Boot Application\\n\\nUpdated content with more detailed examples...\",\n  \"estimatedDurationMinutes\": 45\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}/lessons/{{lessonId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}", "lessons", "{{lessonId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Module Lessons",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}/lessons",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}", "lessons"]
+						}
+					}
+				},
+				{
+					"name": "Get Lesson by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}/lessons/{{lessonId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}", "lessons", "{{lessonId}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Lesson",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/modules/{{moduleId}}/lessons/{{lessonId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "modules", "{{moduleId}}", "lessons", "{{lessonId}}"]
+						}
+					}
+				}
+			]
+		}
+,
+		{
+			"name": "Public Course Catalog",
+			"item": [
+				{
+					"name": "Get Published Courses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public?page=0&size=10&sort=publishedAt,desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "publishedAt,desc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Published Courses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/search?q=spring&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "spring"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Courses by Difficulty - Beginner",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/difficulty/BEGINNER?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "difficulty", "BEGINNER"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Courses by Difficulty - Intermediate",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/difficulty/INTERMEDIATE?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "difficulty", "INTERMEDIATE"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Courses by Tag - Spring",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/tag/spring?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "tag", "spring"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Courses by Tag - Java",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/tag/java?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "tag", "java"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Published Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/public/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "public", "{{courseId}}"]
+						}
+					}
+				}
+			]
+		}
+,
+		{
+			"name": "Test Scenarios",
+			"item": [
+				{
+					"name": "Scenario 1: Try Publish Empty Course (Should Fail)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}/publish",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}", "publish"]
+						}
+					}
+				},
+				{
+					"name": "Scenario 2: Create Course with Invalid Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"\",\n  \"description\": \"\",\n  \"difficulty\": \"INVALID_LEVEL\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/courses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses"]
+						}
+					}
+				},
+				{
+					"name": "Scenario 3: Access Course Without Authentication",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}"]
+						}
+					}
+				},
+				{
+					"name": "Scenario 4: Delete Published Course (Should Fail)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{instructorToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/courses/{{courseId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "courses", "{{courseId}}"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "instructorToken",
+			"value": "your-instructor-jwt-token-here",
+			"type": "string"
+		},
+		{
+			"key": "studentToken",
+			"value": "your-student-jwt-token-here",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": "your-admin-jwt-token-here",
+			"type": "string"
+		},
+		{
+			"key": "courseId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "moduleId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "lessonId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
