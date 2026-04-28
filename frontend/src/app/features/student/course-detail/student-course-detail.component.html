@@ -5,7 +5,9 @@
       <span class="nav-subtitle">Course Details</span>
     </div>
     <div class="nav-actions">
+      <span class="user-name">{{ getCurrentUser()?.fullName || getCurrentUser()?.email }}</span>
       <button class="btn-secondary" (click)="goBack()">Back to Catalog</button>
+      <button class="btn-logout" (click)="logout()">Logout</button>
     </div>
   </nav>
 
@@ -35,7 +37,7 @@
               </span>
             </div>
             <p class="course-description">{{ course()!.description }}</p>
-            
+
             <div class="course-meta">
               <div class="meta-grid">
                 <div class="meta-item">
@@ -45,10 +47,6 @@
                 <div class="meta-item">
                   <span class="meta-label">Duration</span>
                   <span class="meta-value">{{ course()!.estimatedDuration }} hours</span>
-                </div>
-                <div class="meta-item">
-                  <span class="meta-label">Status</span>
-                  <span class="meta-value status-published">{{ course()!.status }}</span>
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Modules</span>
@@ -68,18 +66,19 @@
           </div>
 
           <div class="header-actions">
-            <button class="btn-primary btn-large">
-              Enroll in Course
-            </button>
-            <p class="enrollment-note">
-              <em>Enrollment functionality coming soon!</em>
-            </p>
+            @if (enrolled()) {
+              <div class="enrolled-badge">✓ Enrolled</div>
+            } @else {
+              <button class="btn-enroll" (click)="enroll()" [disabled]="enrolling()">
+                {{ enrolling() ? 'Enrolling...' : 'Enroll in Course' }}
+              </button>
+            }
           </div>
         </header>
 
         <section class="course-content">
           <h2>Course Content</h2>
-          
+
           @if (modules().length === 0) {
             <div class="empty-content">
               <p>This course doesn't have any modules yet.</p>
@@ -90,20 +89,29 @@
                 <div class="module-card">
                   <div class="module-header">
                     <h3>{{ module.title }}</h3>
-                    <span class="lesson-count">
-                      {{ module.lessons?.length || 0 }} lessons
-                    </span>
+                    <span class="lesson-count">{{ module.lessons?.length || 0 }} lessons</span>
                   </div>
                   <p class="module-description">{{ module.description }}</p>
-                  
+
                   @if (module.lessons && module.lessons.length > 0) {
                     <div class="lessons-preview">
-                      <h4>Lessons:</h4>
                       <ul class="lessons-list">
                         @for (lesson of module.lessons; track lesson.id) {
-                          <li class="lesson-item">
-                            <span class="lesson-title">{{ lesson.title }}</span>
-                            <span class="lesson-description">{{ lesson.description }}</span>
+                          <li class="lesson-item" [class.clickable]="enrolled()" (click)="openLesson(lesson)">
+                            <span class="lesson-icon">{{ getContentIcon(lesson.contentType) }}</span>
+                            <div class="lesson-text">
+                              <span class="lesson-title">{{ lesson.title }}</span>
+                              <span class="lesson-meta">{{ lesson.contentType }}
+                                @if (lesson.estimatedDurationMinutes) {
+                                  · {{ lesson.estimatedDurationMinutes }} min
+                                }
+                              </span>
+                            </div>
+                            @if (enrolled()) {
+                              <span class="lesson-action">View →</span>
+                            } @else {
+                              <span class="lesson-locked">🔒</span>
+                            }
                           </li>
                         }
                       </ul>
@@ -112,9 +120,91 @@
                 </div>
               }
             </div>
+
+            @if (!enrolled()) {
+              <div class="enroll-prompt">
+                <p>Enroll in this course to access all lesson content.</p>
+                <button class="btn-enroll" (click)="enroll()" [disabled]="enrolling()">
+                  {{ enrolling() ? 'Enrolling...' : 'Enroll Now' }}
+                </button>
+              </div>
+            }
           }
         </section>
       </div>
+
+      <!-- Lesson Viewer Modal -->
+      @if (activeLesson()) {
+        <div class="modal-overlay" (click)="closeLesson()">
+          <div class="modal-content lesson-viewer" (click)="$event.stopPropagation()">
+            <div class="viewer-header">
+              <h3>{{ activeLesson()!.title }}</h3>
+              <button class="btn-close" (click)="closeLesson()">✕</button>
+            </div>
+
+            <div class="viewer-body">
+              <!-- TEXT content -->
+              @if (activeLesson()!.contentType === ContentType.TEXT) {
+                <div class="text-content">
+                  @if (activeLesson()!.content) {
+                    <div [innerHTML]="activeLesson()!.content"></div>
+                  } @else {
+                    <p class="no-content">No text content available yet.</p>
+                  }
+                </div>
+              }
+
+              <!-- VIDEO content -->
+              @if (activeLesson()!.contentType === ContentType.VIDEO) {
+                @if (getVideoAsset(activeLesson()!); as videoAsset) {
+                  <video controls class="video-player" preload="metadata">
+                    <source [src]="getMediaUrl(videoAsset)" [type]="videoAsset.contentType">
+                    Your browser does not support the video tag.
+                  </video>
+                } @else {
+                  <p class="no-content">Video content not yet uploaded.</p>
+                }
+              }
+
+              <!-- PDF content -->
+              @if (activeLesson()!.contentType === ContentType.PDF) {
+                @if (getPdfAsset(activeLesson()!); as pdfAsset) {
+                  <div class="pdf-viewer">
+                    <iframe [src]="getSafePdfUrl(pdfAsset)" class="pdf-frame"></iframe>
+                    <a [href]="getMediaUrl(pdfAsset)" target="_blank" class="btn-download">
+                      Open PDF in new tab
+                    </a>
+                  </div>
+                } @else {
+                  <p class="no-content">PDF document not yet uploaded.</p>
+                }
+              }
+
+              <!-- IMAGE content -->
+              @if (activeLesson()!.contentType === ContentType.IMAGE) {
+                @if (getImageAsset(activeLesson()!); as imageAsset) {
+                  <div class="image-viewer">
+                    <img [src]="getMediaUrl(imageAsset)" [alt]="activeLesson()!.title" class="lesson-image">
+                  </div>
+                } @else {
+                  <p class="no-content">Image content not yet uploaded.</p>
+                }
+              }
+
+              <!-- QUIZ content -->
+              @if (activeLesson()!.contentType === ContentType.QUIZ) {
+                <p class="no-content">Quiz functionality coming soon.</p>
+              }
+
+              @if (activeLesson()!.description) {
+                <div class="lesson-description-block">
+                  <p>{{ activeLesson()!.description }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
     }
   </div>
 </div>

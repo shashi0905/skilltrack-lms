@@ -72,8 +72,15 @@
                   <div class="lesson-info">
                     <h4>{{ lesson.title }}</h4>
                     <p>{{ lesson.description }}</p>
+                    <span class="content-type-badge">{{ lesson.contentType }}</span>
                   </div>
                   <div class="lesson-actions">
+                    @if (hasPreviewableContent(lesson)) {
+                      <button class="btn-small btn-preview" (click)="openPreview(lesson)">Preview</button>
+                    }
+                    @if (lesson.contentType !== 'TEXT' && lesson.contentType !== 'QUIZ') {
+                      <button class="btn-small btn-upload" (click)="openContentManager(module.id, lesson)">Manage Content</button>
+                    }
                     <button class="btn-small" (click)="openLessonForm(module.id, lesson)">Edit</button>
                     <button class="btn-small btn-danger" (click)="deleteLesson(module.id, lesson.id)">Delete</button>
                   </div>
@@ -135,17 +142,85 @@
               }
             </div>
             <div class="form-group">
-              <label>Content *</label>
-              <textarea formControlName="content" rows="8" placeholder="Lesson content"></textarea>
-              @if (lessonForm.get('content')?.invalid && lessonForm.get('content')?.touched) {
-                <span class="error">Content is required</span>
-              }
+              <label>Content Type *</label>
+              <select formControlName="contentType">
+                <option [value]="ContentType.TEXT">Text Lesson</option>
+                <option [value]="ContentType.VIDEO">Video Lesson</option>
+                <option [value]="ContentType.PDF">PDF Document</option>
+                <option [value]="ContentType.IMAGE">Image Content</option>
+                <option [value]="ContentType.QUIZ">Quiz Assessment</option>
+              </select>
             </div>
+            @if (selectedContentType === ContentType.TEXT) {
+              <div class="form-group">
+                <label>Content</label>
+                <textarea formControlName="content" rows="8" placeholder="Lesson content"></textarea>
+              </div>
+            } @else {
+              <p class="upload-hint">You can upload {{ selectedContentType | lowercase }} files after saving the lesson using the "Manage Content" button.</p>
+            }
             <div class="modal-actions">
               <button type="button" class="btn-secondary" (click)="showLessonForm.set(false)">Cancel</button>
               <button type="submit" class="btn-primary">Save</button>
             </div>
           </form>
+        </div>
+      </div>
+    }
+
+    @if (contentLesson()) {
+      <div class="modal-overlay" (click)="closeContentManager()">
+        <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Manage Content: {{ contentLesson()!.title }}</h3>
+            <button class="btn-small" (click)="closeContentManager()">×</button>
+          </div>
+          <app-lesson-content
+            [lesson]="contentLesson()!"
+            [courseId]="course()!.id"
+            [moduleId]="contentModuleId()!"
+            (contentUpdated)="closeContentManager()">
+          </app-lesson-content>
+        </div>
+      </div>
+    }
+
+    @if (previewLesson()) {
+      <div class="modal-overlay" (click)="closePreview()">
+        <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Preview: {{ previewLesson()!.title }}</h3>
+            <button class="btn-small" (click)="closePreview()">×</button>
+          </div>
+          <div class="preview-body">
+            @if (previewLesson()!.contentType === ContentType.TEXT) {
+              <div class="text-preview" [innerHTML]="previewLesson()!.content"></div>
+            }
+            @if (previewLesson()!.contentType === ContentType.VIDEO) {
+              @if (getVideoAsset(previewLesson()!); as videoAsset) {
+                <video controls class="video-preview" preload="metadata">
+                  <source [src]="getMediaUrl(videoAsset)" [type]="videoAsset.contentType">
+                  Your browser does not support the video tag.
+                </video>
+              } @else {
+                <p class="no-preview">No video uploaded yet.</p>
+              }
+            }
+            @if (previewLesson()!.contentType === ContentType.PDF) {
+              @if (getPdfAsset(previewLesson()!); as pdfAsset) {
+                <iframe [src]="getSafePdfUrl(pdfAsset)" class="pdf-preview-frame"></iframe>
+              } @else {
+                <p class="no-preview">No PDF uploaded yet.</p>
+              }
+            }
+            @if (previewLesson()!.contentType === ContentType.IMAGE) {
+              @if (getImageAsset(previewLesson()!); as imageAsset) {
+                <img [src]="getMediaUrl(imageAsset)" [alt]="previewLesson()!.title" class="image-preview">
+              } @else {
+                <p class="no-preview">No image uploaded yet.</p>
+              }
+            }
+          </div>
         </div>
       </div>
     }

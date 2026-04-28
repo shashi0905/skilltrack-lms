@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CourseService } from '@core/services/course.service';
-import { Course, CourseModule, Lesson } from '@core/models/course.model';
+import { Course, CourseModule, Lesson, ContentType, MediaAsset } from '@core/models/course.model';
+import { LessonContentComponent } from '../lesson-content/lesson-content.component';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LessonContentComponent],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.scss'
 })
@@ -17,6 +19,7 @@ export class CourseDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected readonly course = signal<Course | null>(null);
   protected readonly modules = signal<CourseModule[]>([]);
@@ -28,6 +31,11 @@ export class CourseDetailComponent implements OnInit {
   protected readonly selectedModuleId = signal<string | null>(null);
   protected readonly editingModuleId = signal<string | null>(null);
   protected readonly editingLessonId = signal<string | null>(null);
+  protected readonly contentLesson = signal<Lesson | null>(null);
+  protected readonly contentModuleId = signal<string | null>(null);
+  protected readonly previewLesson = signal<Lesson | null>(null);
+
+  protected readonly ContentType = ContentType;
 
   protected readonly moduleForm: FormGroup;
   protected readonly lessonForm: FormGroup;
@@ -41,7 +49,8 @@ export class CourseDetailComponent implements OnInit {
     this.lessonForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(200)]],
       description: ['', [Validators.required, Validators.maxLength(1000)]],
-      content: ['', [Validators.required]]
+      content: [''],
+      contentType: [ContentType.TEXT, [Validators.required]]
     });
   }
 
@@ -146,13 +155,65 @@ export class CourseDetailComponent implements OnInit {
       this.lessonForm.patchValue({
         title: lesson.title,
         description: lesson.description,
-        content: lesson.content
+        content: lesson.content,
+        contentType: lesson.contentType || ContentType.TEXT
       });
     } else {
       this.editingLessonId.set(null);
-      this.lessonForm.reset();
+      this.lessonForm.reset({ contentType: ContentType.TEXT });
     }
     this.showLessonForm.set(true);
+  }
+
+  protected openContentManager(moduleId: string, lesson: Lesson): void {
+    this.contentModuleId.set(moduleId);
+    this.contentLesson.set(lesson);
+  }
+
+  protected closeContentManager(): void {
+    this.contentLesson.set(null);
+    this.contentModuleId.set(null);
+    const courseId = this.course()?.id;
+    if (courseId) {
+      this.loadModules(courseId);
+    }
+  }
+
+  protected openPreview(lesson: Lesson): void {
+    this.previewLesson.set(lesson);
+  }
+
+  protected closePreview(): void {
+    this.previewLesson.set(null);
+  }
+
+  protected getMediaUrl(asset: MediaAsset): string {
+    return this.courseService.getMediaUrl(asset.id);
+  }
+
+  protected getSafePdfUrl(asset: MediaAsset): SafeResourceUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.getMediaUrl(asset));
+  }
+
+  protected getVideoAsset(lesson: Lesson): MediaAsset | undefined {
+    return lesson.mediaAssets?.find(a => a.mediaType === 'VIDEO');
+  }
+
+  protected getPdfAsset(lesson: Lesson): MediaAsset | undefined {
+    return lesson.mediaAssets?.find(a => a.mediaType === 'DOCUMENT');
+  }
+
+  protected getImageAsset(lesson: Lesson): MediaAsset | undefined {
+    return lesson.mediaAssets?.find(a => a.mediaType === 'IMAGE');
+  }
+
+  protected hasPreviewableContent(lesson: Lesson): boolean {
+    if (lesson.contentType === ContentType.TEXT && lesson.content) return true;
+    return !!(lesson.mediaAssets && lesson.mediaAssets.length > 0);
+  }
+
+  protected get selectedContentType(): ContentType {
+    return this.lessonForm.get('contentType')?.value || ContentType.TEXT;
   }
 
   protected saveLesson(): void {
@@ -165,7 +226,11 @@ export class CourseDetailComponent implements OnInit {
     const moduleId = this.selectedModuleId();
     if (!courseId || !moduleId) return;
 
-    const request = this.lessonForm.value;
+    const formValue = this.lessonForm.value;
+    const request = {
+      ...formValue,
+      content: formValue.contentType === ContentType.TEXT ? formValue.content : null
+    };
     const operation = this.editingLessonId()
       ? this.courseService.updateLesson(courseId, moduleId, this.editingLessonId()!, request)
       : this.courseService.createLesson(courseId, moduleId, request);

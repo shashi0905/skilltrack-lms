@@ -1,8 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CourseService } from '@core/services/course.service';
+import { AuthService } from '@core/services/auth.service';
 import { Course } from '@core/models/course.model';
 
 @Component({
@@ -14,6 +15,8 @@ import { Course } from '@core/models/course.model';
 })
 export class CourseCatalogComponent implements OnInit {
   private readonly courseService = inject(CourseService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly courses = signal<Course[]>([]);
   protected readonly loading = signal(false);
@@ -69,5 +72,19 @@ export class CourseCatalogComponent implements OnInit {
       case 'advanced': return 'difficulty-advanced';
       default: return 'difficulty-beginner';
     }
+  }
+
+  protected getCurrentUser() {
+    return this.authService.getCurrentUser();
+  }
+
+  protected logout(): void {
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/auth/login']),
+      error: () => {
+        this.authService.logoutLocal();
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 }

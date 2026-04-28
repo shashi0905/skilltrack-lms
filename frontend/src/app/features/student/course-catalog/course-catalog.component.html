@@ -5,7 +5,9 @@
       <span class="nav-subtitle">Course Catalog</span>
     </div>
     <div class="nav-actions">
-      <button class="btn-secondary" routerLink="/dashboard">Back to Dashboard</button>
+      <span class="user-name">{{ getCurrentUser()?.fullName || getCurrentUser()?.email }}</span>
+      <button class="btn-secondary" routerLink="/dashboard">Dashboard</button>
+      <button class="btn-logout" (click)="logout()">Logout</button>
     </div>
   </nav>
 

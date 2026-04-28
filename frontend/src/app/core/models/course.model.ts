@@ -13,7 +13,34 @@ export enum MediaType {
   PDF = 'PDF',
   IMAGE = 'IMAGE',
   VIDEO = 'VIDEO',
-  DOCUMENT = 'DOCUMENT'
+  DOCUMENT = 'DOCUMENT',
+  PRESENTATION = 'PRESENTATION',
+  SPREADSHEET = 'SPREADSHEET',
+  ARCHIVE = 'ARCHIVE',
+  AUDIO = 'AUDIO',
+  OTHER = 'OTHER'
+}
+
+export enum ContentType {
+  TEXT = 'TEXT',
+  VIDEO = 'VIDEO',
+  PDF = 'PDF',
+  IMAGE = 'IMAGE',
+  QUIZ = 'QUIZ'
+}
+
+export enum ProcessingStatus {
+  PENDING = 'PENDING',
+  UPLOADING = 'UPLOADING',
+  PROCESSING = 'PROCESSING',
+  READY = 'READY',
+  FAILED = 'FAILED'
+}
+
+export enum QuestionType {
+  SINGLE_CHOICE = 'SINGLE_CHOICE',
+  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
+  TRUE_FALSE = 'TRUE_FALSE'
 }
 
 export interface Course {
@@ -48,23 +75,52 @@ export interface Lesson {
   moduleId: string;
   title: string;
   description: string;
-  content: string;
+  content?: string;
   orderIndex: number;
+  estimatedDurationMinutes?: number;
+  contentType: ContentType;
+  processingStatus: ProcessingStatus;
+  videoDurationSeconds?: number;
+  hlsManifestUrl?: string;
   createdAt: string;
   updatedAt: string;
+  mediaAssets?: MediaAsset[];
+  quizQuestions?: QuizQuestion[];
 }
 
 export interface MediaAsset {
   id: string;
-  courseId?: string;
-  moduleId?: string;
-  lessonId?: string;
-  fileName: string;
-  fileType: MediaType;
-  fileSize: number;
-  storagePath: string;
-  uploadedBy: string;
+  originalFilename: string;
+  contentType: string;
+  fileSizeBytes: number;
+  formattedFileSize: string;
+  mediaType: MediaType;
+  description?: string;
+  downloadUrl?: string;
+  previewUrl?: string;
   createdAt: string;
+  uploadedByName: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  questionText: string;
+  questionType: QuestionType;
+  orderIndex: number;
+  explanation?: string;
+  points: number;
+  createdAt: string;
+  updatedAt: string;
+  options: QuizOption[];
+}
+
+export interface QuizOption {
+  id: string;
+  optionText: string;
+  orderIndex: number;
+  isCorrect: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateCourseRequest {
@@ -96,11 +152,43 @@ export interface UpdateModuleRequest {
 export interface CreateLessonRequest {
   title: string;
   description: string;
-  content: string;
+  content?: string;
+  estimatedDurationMinutes?: number;
+  contentType: ContentType;
 }
 
 export interface UpdateLessonRequest {
   title: string;
   description: string;
-  content: string;
+  content?: string;
+  estimatedDurationMinutes?: number;
+  contentType: ContentType;
+}
+
+export interface CreateQuizQuestionRequest {
+  questionText: string;
+  questionType: QuestionType;
+  explanation?: string;
+  points?: number;
+  options: CreateQuizOptionRequest[];
+}
+
+export interface CreateQuizOptionRequest {
+  optionText: string;
+  isCorrect: boolean;
+}
+
+export enum EnrollmentStatus {
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  DROPPED = 'DROPPED'
+}
+
+export interface EnrollmentResponse {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  instructorName: string;
+  status: EnrollmentStatus;
+  enrolledAt: string;
 }

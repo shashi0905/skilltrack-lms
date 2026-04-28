@@ -8,12 +8,15 @@ import {
   CourseModule,
   Lesson,
   MediaAsset,
+  QuizQuestion,
   CreateCourseRequest,
   UpdateCourseRequest,
   CreateModuleRequest,
   UpdateModuleRequest,
   CreateLessonRequest,
-  UpdateLessonRequest
+  UpdateLessonRequest,
+  CreateQuizQuestionRequest,
+  EnrollmentResponse
 } from '../models/course.model';
 import { MessageResponse } from '../models/auth.model';
 
@@ -116,21 +119,48 @@ export class CourseService {
     return this.http.delete<MessageResponse>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}`);
   }
 
-  uploadMedia(courseId: string, file: File, moduleId?: string, lessonId?: string): Observable<MediaAsset> {
+  // Lesson Content Management
+  uploadLessonContent(courseId: string, moduleId: string, lessonId: string, file: File, description?: string): Observable<MediaAsset> {
     const formData = new FormData();
     formData.append('file', file);
-    if (moduleId) formData.append('moduleId', moduleId);
-    if (lessonId) formData.append('lessonId', lessonId);
-
-    return this.http.post<MediaAsset>(`${this.API_URL}/${courseId}/media`, formData);
+    if (description) {
+      formData.append('description', description);
+    }
+    return this.http.post<MediaAsset>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/content/upload`, formData);
   }
 
-  getMediaByCourse(courseId: string): Observable<MediaAsset[]> {
-    return this.http.get<MediaAsset[]>(`${this.API_URL}/${courseId}/media`);
+  deleteLessonMedia(courseId: string, moduleId: string, lessonId: string, mediaAssetId: string): Observable<MessageResponse> {
+    return this.http.delete<MessageResponse>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/content/media/${mediaAssetId}`);
   }
 
-  deleteMedia(courseId: string, mediaId: string): Observable<MessageResponse> {
-    return this.http.delete<MessageResponse>(`${this.API_URL}/${courseId}/media/${mediaId}`);
+  getLessonProcessingStatus(courseId: string, moduleId: string, lessonId: string): Observable<MessageResponse> {
+    return this.http.get<MessageResponse>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/content/processing-status`);
+  }
+
+  // Quiz Management
+  addQuizQuestion(courseId: string, moduleId: string, lessonId: string, request: CreateQuizQuestionRequest): Observable<QuizQuestion> {
+    return this.http.post<QuizQuestion>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz/questions`, request);
+  }
+
+  updateQuizQuestion(courseId: string, moduleId: string, lessonId: string, questionId: string, request: CreateQuizQuestionRequest): Observable<QuizQuestion> {
+    return this.http.put<QuizQuestion>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz/questions/${questionId}`, request);
+  }
+
+  deleteQuizQuestion(courseId: string, moduleId: string, lessonId: string, questionId: string): Observable<MessageResponse> {
+    return this.http.delete<MessageResponse>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz/questions/${questionId}`);
+  }
+
+  getQuizQuestions(courseId: string, moduleId: string, lessonId: string): Observable<QuizQuestion[]> {
+    return this.http.get<QuizQuestion[]>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz/questions`);
+  }
+
+  getQuizQuestion(courseId: string, moduleId: string, lessonId: string, questionId: string): Observable<QuizQuestion> {
+    return this.http.get<QuizQuestion>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz/questions/${questionId}`);
+  }
+
+  // Video Streaming
+  getVideoStreamUrl(mediaAssetId: string): Observable<string> {
+    return this.http.get<string>(`${environment.apiUrl}/video/stream/${mediaAssetId}/signed-url`);
   }
 
   // Public course browsing methods
@@ -158,5 +188,33 @@ export class CourseService {
     return this.http.get<any>(`${this.API_URL}/public/${id}`).pipe(
       map(course => this.transformCourseResponse(course))
     );
+  }
+
+  // Enrollment
+  enrollInCourse(courseId: string): Observable<EnrollmentResponse> {
+    return this.http.post<EnrollmentResponse>(`${environment.apiUrl}/enrollments/${courseId}`, {});
+  }
+
+  getMyEnrollments(): Observable<EnrollmentResponse[]> {
+    return this.http.get<EnrollmentResponse[]>(`${environment.apiUrl}/enrollments`);
+  }
+
+  checkEnrollment(courseId: string): Observable<{enrolled: boolean}> {
+    return this.http.get<{enrolled: boolean}>(`${environment.apiUrl}/enrollments/${courseId}/status`);
+  }
+
+  // Media file URL
+  getMediaUrl(mediaAssetId: string): string {
+    return `${environment.apiUrl}/media/${mediaAssetId}`;
+  }
+
+  // Upload media (used by MediaUploadComponent)
+  uploadMedia(courseId: string, file: File, moduleId?: string, lessonId?: string): Observable<MediaAsset> {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (moduleId && lessonId) {
+      return this.http.post<MediaAsset>(`${this.API_URL}/${courseId}/modules/${moduleId}/lessons/${lessonId}/content/upload`, formData);
+    }
+    return this.http.post<MediaAsset>(`${this.API_URL}/${courseId}/media/upload`, formData);
   }
 }

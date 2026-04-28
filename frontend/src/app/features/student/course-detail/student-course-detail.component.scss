@@ -37,6 +37,32 @@
       background: rgba(255, 255, 255, 0.3);
     }
   }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-name {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .btn-logout {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255, 80, 80, 0.4);
+    }
+  }
 }
 
 .detail-content {
@@ -216,10 +242,44 @@
       }
     }
 
+    .btn-enroll {
+      background: #4caf50;
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+
+      &:hover:not(:disabled) {
+        background: #45a049;
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+    }
+
+    .enrolled-badge {
+      background: rgba(76, 175, 80, 0.25);
+      color: #a5d6a7;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      text-align: center;
+      border: 2px solid rgba(76, 175, 80, 0.4);
+    }
+
     .enrollment-note {
       font-size: 12px;
       opacity: 0.8;
-      margin: 0;
+      margin: 8px 0 0;
     }
   }
 }
@@ -331,12 +391,52 @@
       border-radius: 8px;
       margin-bottom: 8px;
       border-left: 3px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      &.clickable {
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #e3f2fd;
+          border-left-color: #1976d2;
+        }
+      }
+
+      .lesson-icon {
+        font-size: 1.3rem;
+        flex-shrink: 0;
+      }
+
+      .lesson-text {
+        flex: 1;
+      }
 
       .lesson-title {
         display: block;
         font-weight: 500;
         color: #333;
-        margin-bottom: 4px;
+      }
+
+      .lesson-meta {
+        display: block;
+        font-size: 12px;
+        color: #999;
+        margin-top: 2px;
+      }
+
+      .lesson-action {
+        color: #1976d2;
+        font-size: 14px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+
+      .lesson-locked {
+        font-size: 14px;
+        flex-shrink: 0;
       }
 
       .lesson-description {
@@ -373,4 +473,162 @@
       font-size: 24px;
     }
   }
+}
+
+.enroll-prompt {
+  text-align: center;
+  padding: 32px;
+  margin-top: 24px;
+  background: #e3f2fd;
+  border-radius: 12px;
+
+  p {
+    margin: 0 0 16px;
+    color: #1565c0;
+    font-size: 16px;
+  }
+
+  .btn-enroll {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background: #1565c0;
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.lesson-viewer {
+  background: white;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  .viewer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+
+    h3 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .btn-close {
+      background: #f5f5f5;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #e0e0e0;
+      }
+    }
+  }
+
+  .viewer-body {
+    padding: 24px;
+  }
+}
+
+.text-content {
+  line-height: 1.8;
+  font-size: 16px;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .pdf-frame {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .btn-download {
+    display: inline-block;
+    text-align: center;
+    padding: 10px 20px;
+    background: #1976d2;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #1565c0;
+    }
+  }
+}
+
+.image-viewer {
+  text-align: center;
+
+  .lesson-image {
+    max-width: 100%;
+    max-height: 600px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.video-player {
+  width: 100%;
+  max-height: 600px;
+  background: #000;
+  border-radius: 8px;
+}
+
+.no-content {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 40px 20px;
+}
+
+.lesson-description-block {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 14px;
 }
